@@ -93,15 +93,124 @@ async function readStudentListFromFile(file) {
             };
             reader.onerror = () => reject(new Error('读取TXT文件失败'));
             reader.readAsText(file, 'UTF-8');
-        } else if (fileExtension === 'xlsx') {
+        } 
+        else if (fileExtension === 'xlsx') {
             const reader = new FileReader();
             reader.onload = (event) => {
                 try {
                     const data = new Uint8Array(event.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // 检查工作簿是否存在
+                    if (!workbook || !workbook.SheetNames.length) {
+                        throw new Error('Excel 文件格式不正确或为空');
+                    }
+        
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
+        
+                    // 检查工作表是否存在
+                    if (!worksheet) {
+                        throw new Error('工作表不存在或为空');
+                    }
+        
                     const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    console.log('读取的列名:', Object.keys(jsonData[0] || {})); // 调试用
+                    
+                    const names = [];
+                    for (const row of jsonData) {
+                        let name = null;
+        
+                        // 1. 优先检查指定的列名（增加更多可能的列名）
+                        const nameColumns = [
+                            '姓名', '名字', '学生姓名', '学员姓名', 
+                            'name', 'student name', 'full name',
+                            '全名', '中文名', '英文名'
+                        ];
+        
+                        // 使用模糊匹配查找列名
+                        const matchedColumns = Object.keys(row).filter(key => 
+                            nameColumns.some(column => 
+                                key.toLowerCase().includes(column.toLowerCase())
+                            )
+                        );
+        
+                        // 如果找到匹配的列，使用第一个匹配的列
+                        if (matchedColumns.length > 0) {
+                            name = row[matchedColumns[0]];
+                        }
+        
+                        // 2. 如果没有找到指定列名，尝试智能识别
+                        if (!name) {
+                            // 扩展排除关键词列表
+                            const excludeKeywords = [
+                                '序号', '学号', '编号', 'id', 'ID', '年级', '班级',
+                                '性别', '联系方式', '电话', '备注', 'number', 'no',
+                                '成绩', '分数', '得分', '等级', '评分', '考试',
+                                '日期', '时间', '地点', '教室', '课程'
+                            ];
+        
+                            for (const key in row) {
+                                // 跳过包含排除关键词的列
+                                if (excludeKeywords.some(keyword => 
+                                    key.toLowerCase().includes(keyword.toLowerCase())
+                                )) {
+                                    continue;
+                                }
+        
+                                const value = row[key];
+                                if (typeof value === 'string' || typeof value === 'number') {
+                                    const trimmedValue = String(value).trim();
+                                    
+                                    // 放宽姓名校验规则
+                                    if (trimmedValue.length >= 2 && trimmedValue.length <= MAX_NAME_LENGTH) {
+                                        // 允许更多的字符组合
+                                        if (/^[\u4e00-\u9fa5a-zA-Z0-9\s·.。•\-]+$/.test(trimmedValue)) {
+                                            name = trimmedValue;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+        
+                        // 3. 处理找到的名字
+                        if (name) {
+                            name = String(name).trim();
+                            if (name.length > MAX_NAME_LENGTH) {
+                                console.warn(`警告: 姓名 "${name}" 超过最大长度限制`);
+                                continue;
+                            }
+                            
+                            // 放宽名字验证规则
+                            if (/^[\u4e00-\u9fa5a-zA-Z0-9\s·.。•\-]+$/.test(name)) {
+                                names.push(name);
+                            } else {
+                                console.warn(`警告: 姓名 "${name}" 包含无效字符`);
+                            }
+                        }
+                    }
+        
+                    if (names.length === 0) {
+                        throw new Error('未能从Excel文件中识别出任何有效的姓名');
+                    }
+        
+                    if (names.length > MAX_STUDENTS) {
+                        throw new Error(`名单不能超过${MAX_STUDENTS}人`);
+                    }
+        
+                    // 去重并排序
+                    const uniqueNames = [...new Set(names)].sort();
+                    resolve(uniqueNames);
+        
+                } catch (error) {
+                    reject(new Error('解析Excel文件失败: ' + error.message));
+                }
+            };
+            reader.onerror = () => reject(new Error('读取Excel文件失败'));
+            reader.readAsArrayBuffer(file);
+        }               
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
                     
                     const names = [];
                     for (const row of jsonData) {
@@ -162,7 +271,8 @@ async function readStudentListFromFile(file) {
             };
             reader.onerror = () => reject(new Error('读取Excel文件失败'));
             reader.readAsArrayBuffer(file);
-        } else {
+        } 
+        else {
             reject(new Error('不支持的文件格式'));
         }
     });
