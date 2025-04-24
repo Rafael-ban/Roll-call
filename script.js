@@ -106,16 +106,36 @@ async function readStudentListFromFile(file) {
                     const names = [];
                     for (const row of jsonData) {
                         let name = null;
-                        if (row['姓名']) {
-                            name = row['姓名'];
-                        } else if (row['名字'] || row['学生姓名'] || row['学员姓名']) {
-                            name = row['名字'] || row['学生姓名'] || row['学员姓名'];
-                        } else {
+                        // 1. 优先检查指定的列名
+                        const nameColumns = ['姓名', '名字', '学生姓名', '学员姓名'];
+                        for (const column of nameColumns) {
+                            if (row[column]) {
+                                name = row[column].toString().trim();
+                                break;
+                            }
+                        }
+                        
+                        // 2. 如果没有找到指定列名，尝试智能识别
+                        if (!name) {
+                            // 排除这些关键词的列
+                            const excludeKeywords = ['序号', '学号', '编号', 'id', 'ID', '年级', '班级', '性别', '联系方式', '电话', '备注'];
                             for (const key in row) {
+                                // 跳过包含排除关键词的列
+                                if (excludeKeywords.some(keyword => key.includes(keyword))) {
+                                    continue;
+                                }
                                 const value = row[key];
                                 if (typeof value === 'string' && value.trim() !== '') {
-                                    name = value.trim();
-                                    break;
+                                    // 额外的验证：检查是否像是一个姓名
+                                    const trimmedValue = value.trim();
+                                    // 通常姓名不会太长，也不会太短
+                                    if (trimmedValue.length >= 2 && trimmedValue.length <= MAX_NAME_LENGTH) {
+                                        // 确保不包含数字和特殊字符
+                                        if (/^[\u4e00-\u9fa5a-zA-Z\s·.。•]+$/.test(trimmedValue)) {
+                                            name = trimmedValue;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
