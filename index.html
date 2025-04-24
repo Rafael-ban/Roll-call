@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不那么智能的智能点名系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>不那么智能的智能点名系统</h1>
+        <p>上传名单、记录出勤、保存查询</p>
+    </div>
+    
+    <div class="content">
+        <div class="course-info">
+            <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
+            <div class="date-time-container">
+                <input type="date" id="courseDate" placeholder="日期">
+                <input type="time" id="courseTime" placeholder="时间">
+            </div>
+            <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
+            <input type="text" id="counselor" placeholder="辅导员姓名">
+            <input type="text" id="classInfo" placeholder="专业班级（如：计算机科学与技术1班）">
+        </div>
+        
+        <div class="file-upload">
+            <h2>上传名单文件</h2>
+            <div class="file-input">
+                <label for="studentList">总名单（支持txt和xlsx格式）</label>
+                <input type="file" id="studentList" accept=".txt,.xlsx" />
+                <div id="studentListError" class="error-message"></div>
+            </div>
+            
+            <div class="file-input">
+                <h2>请假名单</h2>
+                <div class="tabs">
+                    <div class="tab active" data-tab="file-tab">文件上传</div>
+                    <div class="tab" data-tab="manual-tab">手动输入</div>
+                </div>
+                
+                <div class="tab-content active" id="file-tab">
+                    <label for="absenceList">请假名单文件（支持txt和xlsx格式）</label>
+                    <input type="file" id="absenceList" accept=".txt,.xlsx" />
+                    <div id="absenceListError" class="error-message"></div>
+                </div>
+                
+                <div class="tab-content" id="manual-tab">
+                    <label for="manualAbsenceList">请输入请假学生姓名（支持换行或空格分隔）</label>
+                    <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
+张三 李四 王五
+或
+张三
+李四
+王五"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="loadLists" class="btn-primary">加载名单</button>
+            <button id="markAbsent" class="btn-secondary">标记请假</button>
+            <button id="saveAttendance" class="btn-success">保存出勤记录</button>
+        </div>
+        
+        <div class="attendance-section">
+            <h2>出勤记录</h2>
+            <table class="attendance-list" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th style="width: 60%">姓名</th>
+                        <th style="width: 40%">出勤状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 动态加载内容 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="footer">
+        不那么智能的智能点名系统 © 2025
+        <div>系统已稳定运行 <span id="runningDays" class="running-days">0</span> 天</div>
+    </div>
+</div>
+
+<!-- 引入外部库和脚本 -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,364 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+    padding: 20px;
+}
+
+/* Container and header */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #4a90e2, #6c5ce7);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header p {
+    opacity: 0.85;
+    font-size: 14px;
+}
+
+/* Content section */
+.content {
+    padding: 20px;
+}
+
+/* Course info styles */
+.course-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.course-info input,
+.course-info .date-time-container {
+    flex: 1;
+    min-width: 48%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.date-time-container {
+    display: flex;
+    gap: 5px;
+}
+
+.date-time-container input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: auto;
+    flex: 1;
+}
+
+/* File upload section */
+.file-upload {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.file-upload h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.file-input {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.file-input label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #666;
+}
+
+.file-input input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    background: white;
+}
+
+/* Button styles */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.btn-primary {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #3a7bc8;
+}
+
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #219653;
+}
+
+.btn-secondary {
+    background-color: #718096;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6779;
+}
+
+/* Attendance section */
+.attendance-section {
+    margin-top: 20px;
+}
+
+.attendance-section h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #444;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #eee;
+}
+
+.attendance-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.attendance-list th,
+.attendance-list td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.attendance-list th {
+    background-color: #f5f7fa;
+    color: #555;
+    font-weight: bold;
+}
+
+.attendance-list tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Select dropdown styles */
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* Status colors */
+.present {
+    color: #27ae60;
+}
+
+.absent {
+    color: #e74c3c;
+}
+
+/* Status badge */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Footer styles */
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    color: #888;
+    font-size: 12px;
+    border-top: 1px solid #eee;
+}
+
+/* Error message */
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Running days counter */
+.running-days {
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+/* Textarea styles */
+.absence-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    resize: vertical;
+}
+
+/* Tab styles */
+.tabs {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.tab.active {
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-content {
+    display: none;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 0 4px 4px 4px;
+    margin-top: -1px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Tutorial link */
+#tutorialLink {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+#tutorialLink:hover {
+    background-color: #45a049;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .course-info {
+        flex-direction: column;
+    }
+    
+    .date-time-container {
+        flex-direction: column;
+    }
+}
+
+/* Loading indicator */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none;
+}
+
+.loading::after {
+    content: "加载中...";
+    font-size: 16px;
+    color: #4a90e2;
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: none;
+        padding: 0;
+    }
+
+    .container {
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .button-group,
+    .file-upload,
+    #tutorialLink {
+        display: none;
+    }
+
+    .attendance-list {
+        page-break-inside: avoid;
+    }
+}
