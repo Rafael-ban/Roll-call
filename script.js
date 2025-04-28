@@ -487,7 +487,7 @@ document.getElementById('saveAttendance').addEventListener('click', () => {
 function addTutorialLink() {
     const tutorialLink = document.createElement('a');
     tutorialLink.href = 'https://rafael.xiaoqiu.in/post/tutorial-not-so-intelligent-smart';
-    tutorialLink.textContent = '使用教程';
+    tutorialLink.textContent = 'FAB';
     tutorialLink.id = 'tutorialLink';
     document.body.appendChild(tutorialLink);
 }
