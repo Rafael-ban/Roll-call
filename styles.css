@@ -39,6 +39,25 @@ body {
     font-size: 14px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .button {
+    font-size: 14px;
+  }
+
+  .element {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
 /* Content section */
 .content {
     padding: 20px;
