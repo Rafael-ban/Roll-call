@@ -295,24 +295,32 @@ select {
     display: block;
 }
 
-/* Tutorial link */
+/* Tutorial link as FAB */
 #tutorialLink {
     position: fixed;
-    top: 20px;
+    bottom: 20px;  /* 改为底部固定 */
     right: 20px;
-    padding: 8px 12px;
+    width: 56px;   /* FAB 标准尺寸 */
+    height: 56px;  /* FAB 标准尺寸 */
+    padding: 0;
     background-color: #4CAF50;
     color: white;
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 50%;  /* 圆形按钮 */
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     z-index: 1000;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
 }
 
 #tutorialLink:hover {
     background-color: #45a049;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
 }
 
 /* Responsive design */
