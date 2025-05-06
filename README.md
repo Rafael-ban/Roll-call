@@ -43,16 +43,6 @@
 
 ## 🚀 使用说明
 
-### 下载安装
-
-```bash
-git clone https://github.com/Rafael-ban/Roll-call.git
-cd Roll-call
-# 后续安装步骤...
-```
-
-### 快速开始
-
 1. 📤 **导入名单**
    - 支持拖拽导入文件
    - 自动识别文件格式
