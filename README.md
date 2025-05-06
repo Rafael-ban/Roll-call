@@ -11,7 +11,7 @@
 ![GitHub license](https://img.shields.io/github/license/Rafael-ban/Roll-call)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Rafael-ban/Roll-call)
 
-[📦 下载](#下载安装) • [📖 文档](#使用说明) • [🤝 贡献](#贡献指南) • [📜 许可证](#开源协议)
+[📖 文档](#使用说明) • [🤝 贡献](#贡献指南) • [📜 许可证](#开源协议)
 
 </div>
 
