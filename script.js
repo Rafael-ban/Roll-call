@@ -148,43 +148,64 @@ async function readStudentListFromFile(file) {
     });
 }
 
-// 解析手动输入的名单
-function parseManualNames(input) {
-    if (!input || input.trim() === '') {
-        return [];
+function parseStatusNames() {
+    const input = document.getElementById('statusNameList').value.trim();
+    if (!input) {
+        throw new Error('请输入要标记的学生姓名！');
     }
     
-    let lines = input.split('\n');
-    let names = [];
-    
-    lines.forEach(line => {
-        if (line.includes(' ')) {
-            const lineNames = line.split(' ')
-                .map(name => name.trim())
-                .filter(name => {
-                    if (name === '') return false;
-                    if (name.length > MAX_NAME_LENGTH) {
-                        throw new Error(`姓名长度不能超过${MAX_NAME_LENGTH}个字符`);
-                    }
-                    return /^[\u4e00-\u9fa5a-zA-Z\s·.。•]+$/.test(name);
-                });
-            names = names.concat(lineNames);
-        } else {
-            const trimmedLine = line.trim();
-            if (trimmedLine !== '' && 
-                trimmedLine.length <= MAX_NAME_LENGTH && 
-                /^[\u4e00-\u9fa5a-zA-Z\s·.。•]+$/.test(trimmedLine)) {
-                names.push(trimmedLine);
+    return parseManualNames(input); // 重用现有的名单解析函数
+}
+
+// 标记指定学生的状态
+function markStudentStatus(targetNames, status) {
+    if (!targetNames || targetNames.length === 0) {
+        alert('请输入要标记的学生姓名！');
+        return;
+    }
+
+    const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
+    if (rows.length === 0) {
+        alert('没有学生名单数据！');
+        return;
+    }
+
+    let markedCount = 0;
+    const notFoundNames = [];
+
+    // 遍历要标记的名单
+    for (const targetName of targetNames) {
+        let found = false;
+        // 在表格中查找对应的学生
+        for (let i = 0; i < rows.length; i++) {
+            const rowName = rows[i].cells[0].textContent;
+            if (rowName === targetName) {
+                const select = rows[i].cells[1].getElementsByTagName('select')[0];
+                select.value = status;
+                // 更新样式
+                select.classList.remove('present');
+                select.classList.add('absent');
+                found = true;
+                markedCount++;
+                break;
             }
         }
-    });
-    
-    if (names.length > MAX_STUDENTS) {
-        throw new Error(`名单不能超过${MAX_STUDENTS}人`);
+        if (!found) {
+            notFoundNames.push(targetName);
+        }
     }
-    
-    return [...new Set(names)].sort();
+
+    // 显示操作结果
+    let message = `已成功标记 ${markedCount} 名学生为"${status}"。`;
+    if (notFoundNames.length > 0) {
+        message += `\n未找到以下学生：${notFoundNames.join('、')}`;
+    }
+    alert(message);
+
+    // 清空输入框
+    document.getElementById('statusNameList').value = '';
 }
+
 
 // 获取请假名单
 async function getAbsenceList() {
@@ -322,6 +343,38 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 添加教程链接
     addTutorialLink();
+
+    // 标记迟到按钮事件
+    document.getElementById('markSelectedLate').addEventListener('click', () => {
+        try {
+            const names = parseStatusNames();
+            markStudentStatus(names, '迟到');
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    // 标记早退按钮事件
+    document.getElementById('markSelectedEarlyLeave').addEventListener('click', () => {
+        try {
+            const names = parseStatusNames();
+            markStudentStatus(names, '早退');
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    // 标记缺勤按钮事件
+    document.getElementById('markSelectedAbsence').addEventListener('click', () => {
+        try {
+            const names = parseStatusNames();
+            markStudentStatus(names, '缺勤');
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+    
+    document.getElementById('saveExcel').addEventListener('click', saveAsExcel);
 });
 
 // 文件输入验证事件监听
@@ -490,4 +543,123 @@ function addTutorialLink() {
     tutorialLink.textContent = '教程';
     tutorialLink.id = 'tutorialLink';
     document.body.appendChild(tutorialLink);
+}
+
+// 在已有代码后面添加以下函数和事件监听器
+
+// 创建Excel工作表数据
+function createExcelData(courseDateTime, courseName, classInfo, classroom, counselor) {
+    // 获取表格数据
+    const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
+    
+    // 准备表头
+    const headers = [
+        ['课程考勤记录'],
+        [],
+        ['基本信息'],
+        ['时间', courseDateTime],
+        ['课程', courseName],
+        ['专业班级', classInfo],
+        ['教室', classroom],
+        ['辅导员', counselor],
+        [],
+        ['考勤详情'],
+        ['姓名', '出勤状态']
+    ];
+
+    // 准备考勤数据
+    const attendanceData = Array.from(rows).map(row => [
+        row.cells[0].textContent,
+        row.cells[1].getElementsByTagName('select')[0].value
+    ]);
+
+    // 统计数据
+    let stats = {
+        total: attendanceData.length,
+        present: 0,
+        absent: 0,
+        leave: 0,
+        late: 0,
+        early: 0
+    };
+
+    attendanceData.forEach(([_, status]) => {
+        switch(status) {
+            case '出勤': stats.present++; break;
+            case '缺勤': stats.absent++; break;
+            case '请假': stats.leave++; break;
+            case '迟到': stats.late++; break;
+            case '早退': stats.early++; break;
+        }
+    });
+
+    // 添加统计信息
+    const summary = [
+        [],
+        ['统计信息'],
+        ['应到人数', stats.total],
+        ['实到人数', stats.present],
+        ['缺勤人数', stats.absent],
+        ['请假人数', stats.leave],
+        ['迟到人数', stats.late],
+        ['早退人数', stats.early]
+    ];
+
+    // 合并所有数据
+    return [...headers, ...attendanceData, ...summary];
+}
+
+// 保存为Excel文件
+function saveAsExcel() {
+    // 获取课程信息
+    const courseName = document.getElementById('courseName').value || '未命名课程';
+    const courseDate = document.getElementById('courseDate').value || '';
+    const courseTimeValue = document.getElementById('courseTime').value || '';
+    const courseDateTime = courseDate && courseTimeValue ? 
+        `${courseDate} ${courseTimeValue}` : 
+        new Date().toLocaleString('zh-CN');
+    const classroom = document.getElementById('classroom').value || '未指定教室';
+    const counselor = document.getElementById('counselor').value || '未指定辅导员';
+    const classInfo = document.getElementById('classInfo').value || '未指定班级';
+
+    // 检查是否有数据
+    const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
+    if (rows.length === 0 || students.length === 0) {
+        alert('没有出勤记录可导出！');
+        return;
+    }
+
+    try {
+        // 创建工作表数据
+        const wsData = createExcelData(courseDateTime, courseName, classInfo, classroom, counselor);
+
+        // 创建工作簿和工作表
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        // 设置单元格合并
+        ws['!merges'] = [
+            // 标题合并单元格（A1:B1）
+            {s: {r: 0, c: 0}, e: {r: 0, c: 1}}
+        ];
+
+        // 设置列宽
+        ws['!cols'] = [
+            {wch: 20}, // 第一列宽度
+            {wch: 15}  // 第二列宽度
+        ];
+
+        // 添加工作表到工作簿
+        XLSX.utils.book_append_sheet(wb, ws, '考勤记录');
+
+        // 生成文件名
+        const fileName = `${courseName}_${courseDate}_考勤记录.xlsx`;
+
+        // 保存文件
+        XLSX.writeFile(wb, fileName);
+
+        alert('Excel文件已导出！');
+    } catch (error) {
+        alert('导出Excel文件失败：' + error.message);
+    }
 }
