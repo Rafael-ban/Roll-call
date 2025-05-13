@@ -203,22 +203,8 @@ function parseManualNames(input) {
 
 // 获取请假名单（函数名保持不变以维持兼容性）
 async function getAbsenceList() {
-    const isFileTabActive = document.querySelector('.tab[data-tab="file-tab"]').classList.contains('active');
-    
-    if (isFileTabActive) {
-        const absenceListFile = document.getElementById('absenceList').files[0];
-        
-        if (absenceListFile) {
-            if (!checkFileType(absenceListFile)) {
-                throw new Error('标记名单必须是TXT或XLSX格式的文件！');
-            }
-            return await readStudentListFromFile(absenceListFile);
-        }
-        return [];
-    } else {
-        const manualInput = document.getElementById('manualAbsenceList').value;
-        return parseManualNames(manualInput);
-    }
+    const manualInput = document.getElementById('manualAbsenceList').value;
+    return parseManualNames(manualInput);
 }
 
 // 使用DocumentFragment优化DOM操作
@@ -432,20 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateRunningDays();
     setInterval(calculateRunningDays, 86400000);
     
-    // 设置标签页切换
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            tabs.forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            this.classList.add('active');
-            const tabId = this.getAttribute('data-tab');
-            document.getElementById(tabId).classList.add('active');
-        });
-    });
-    
     // 加载保存的表单数据
     loadFormData();
     
@@ -465,21 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('studentList').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const errorElement = document.getElementById('studentListError');
-    
-    try {
-        if (file) {
-            checkFileType(file);
-            errorElement.textContent = '';
-        }
-    } catch (error) {
-        errorElement.textContent = '错误：' + error.message;
-        event.target.value = '';
-    }
-});
-
-document.getElementById('absenceList').addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    const errorElement = document.getElementById('absenceListError');
     
     try {
         if (file) {

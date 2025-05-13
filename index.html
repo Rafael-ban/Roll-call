@@ -36,26 +36,13 @@
             
             <div class="file-input">
                 <h2>通用标记名单</h2>
-                <div class="tabs">
-                    <div class="tab active" data-tab="file-tab">文件上传</div>
-                    <div class="tab" data-tab="manual-tab">手动输入</div>
-                </div>
-                
-                <div class="tab-content active" id="file-tab">
-                    <label for="absenceList">通用标记名单文件（支持txt和xlsx格式）</label>
-                    <input type="file" id="absenceList" accept=".txt,.xlsx" />
-                    <div id="absenceListError" class="error-message"></div>
-                </div>
-                
-                <div class="tab-content" id="manual-tab">
-                    <label for="manualAbsenceList">请输入需要标记的学生姓名（支持换行或空格分隔）</label>
-                    <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
+                <label for="manualAbsenceList">请输入需要标记的学生姓名（支持换行或空格分隔）</label>
+                <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
 张三 李四 王五
 或
 张三
 李四
 王五"></textarea>
-                </div>
             </div>
         </div>
         

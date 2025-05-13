@@ -268,40 +268,6 @@ select {
     resize: vertical;
 }
 
-/* Tab styles */
-.tabs {
-    display: flex;
-    margin-bottom: 10px;
-}
-
-.tab {
-    padding: 8px 15px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
-}
-
-.tab.active {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
-    position: relative;
-    z-index: 1;
-}
-
-.tab-content {
-    display: none;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 0 4px 4px 4px;
-    margin-top: -1px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
 /* Tutorial link as FAB */
 #tutorialLink {
     position: fixed;
@@ -453,21 +419,6 @@ select {
 
     .attendance-list tr:hover {
         background-color: #363636;
-    }
-
-    .tab {
-        background-color: #3d3d3d;
-        border-color: #4d4d4d;
-        color: #e0e0e0;
-    }
-
-    .tab.active {
-        background-color: #2d2d2d;
-        border-color: #4d4d4d;
-    }
-
-    .tab-content {
-        border-color: #4d4d4d;
     }
 
     /* 调整状态颜色适应深色主题 */
