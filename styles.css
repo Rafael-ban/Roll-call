@@ -244,6 +244,17 @@ select {
     border-top: 1px solid #eee;
 }
 
+.footer a {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer a:hover {
+    color: #3a7bc8;
+    text-decoration: underline;
+}
+
 /* Error message */
 .error-message {
     color: #e74c3c;
