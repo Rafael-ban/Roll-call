@@ -106,12 +106,25 @@ async function readStudentListFromFile(file) {
                     const names = [];
                     for (const row of jsonData) {
                         let name = null;
+                        // 检查是否存在"姓名"列
                         if (row['姓名']) {
                             name = row['姓名'];
-                        } else if (row['名字'] || row['学生姓名'] || row['学员姓名']) {
+                        } 
+                        // 检查其他可能的列名
+                        else if (row['名字'] || row['学生姓名'] || row['学员姓名']) {
                             name = row['名字'] || row['学生姓名'] || row['学员姓名'];
-                        } else {
+                        } 
+                        // 如果没有找到指定列名，遍历所有列
+                        else {
                             for (const key in row) {
+                                // 跳过可能是序号的列
+                                if (key === '序号' || key.toLowerCase().includes('no') || 
+                                    /^\d+$/.test(row[key]) || // 纯数字
+                                    key === '' || // 空列名
+                                    key.includes('序') || // 包含"序"字
+                                    /^[A-Z]$/.test(key)) { // 单个大写字母（Excel默认列标）
+                                    continue;
+                                }
                                 const value = row[key];
                                 if (typeof value === 'string' && value.trim() !== '') {
                                     name = value.trim();
@@ -122,10 +135,12 @@ async function readStudentListFromFile(file) {
                         
                         if (name && typeof name === 'string') {
                             name = name.trim();
-                            if (name.length > MAX_NAME_LENGTH) {
-                                throw new Error(`姓名长度不能超过${MAX_NAME_LENGTH}个字符`);
-                            }
-                            if (/^[\u4e00-\u9fa5a-zA-Z\s·.。•]+$/.test(name)) {
+                            // 额外检查确保不是序号
+                            if (!(/^\d+$/.test(name)) && // 不是纯数字
+                                name !== '序号' && 
+                                !name.toLowerCase().includes('no') &&
+                                name.length <= MAX_NAME_LENGTH &&
+                                /^[\u4e00-\u9fa5a-zA-Z\s·.。•]+$/.test(name)) {
                                 names.push(name);
                             }
                         }
@@ -286,6 +301,86 @@ function loadFormData() {
     }
 }
 
+// 导出完整Excel表格
+function exportFullExcel() {
+    const courseName = document.getElementById('courseName').value || '未命名课程';
+    const courseDate = document.getElementById('courseDate').value;
+    const courseTime = document.getElementById('courseTime').value;
+    const classroom = document.getElementById('classroom').value || '未指定教室';
+    const counselor = document.getElementById('counselor').value || '未指定辅导员';
+    const classInfo = document.getElementById('classInfo').value || '未指定班级';
+    
+    const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
+    if (rows.length === 0) {
+        alert('没有考勤数据可导出！');
+        return;
+    }
+
+    // 创建工作簿
+    const wb = XLSX.utils.book_new();
+    
+    // 准备数据
+    const headerData = [
+        ['课程考勤完整记录表'],
+        ['课程名称', courseName],
+        ['上课时间', `${courseDate} ${courseTime}`],
+        ['上课地点', classroom],
+        ['班级', classInfo],
+        ['辅导员', counselor],
+        [''],
+    ];
+
+    // 添加表头
+    const tableHeader = ['序号', '姓名', '出勤状态', '备注'];
+    headerData.push(tableHeader);
+
+    // 添加学生数据
+    let presentCount = 0;
+    const studentData = [];
+    for (let i = 0; i < rows.length; i++) {
+        const name = rows[i].cells[0].textContent;
+        const status = rows[i].cells[1].getElementsByTagName('select')[0].value;
+        if (status === '出勤') presentCount++;
+        studentData.push([i + 1, name, status, '']);
+    }
+
+    // 添加统计信息
+    const totalCount = rows.length;
+    const summaryData = [
+        [''],
+        ['考勤统计'],
+        ['应到人数', totalCount],
+        ['实到人数', presentCount],
+        ['出勤率', `${((presentCount / totalCount) * 100).toFixed(2)}%`]
+    ];
+
+    // 合并所有数据
+    const wsData = [...headerData, ...studentData, ...summaryData];
+
+    // 创建工作表
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // 设置单元格合并
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, // 标题合并
+        { s: { r: rows.length + 9, c: 0 }, e: { r: rows.length + 9, c: 3 } } // 统计标题合并
+    ];
+
+    // 设置列宽
+    ws['!cols'] = [
+        { wch: 8 },  // 序号列宽
+        { wch: 15 }, // 姓名列宽
+        { wch: 12 }, // 状态列宽
+        { wch: 20 }  // 备注列宽
+    ];
+
+    // 添加工作表到工作簿
+    XLSX.utils.book_append_sheet(wb, ws, "考勤记录");
+
+    // 导出文件
+    XLSX.writeFile(wb, `${courseName}_${courseDate}_完整考勤表.xlsx`);
+}
+
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 设置当前日期和时间
@@ -322,6 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 添加教程链接
     addTutorialLink();
+
+    // 添加导出Excel按钮事件监听
+    document.getElementById('exportFullExcel').addEventListener('click', exportFullExcel);
 });
 
 // 文件输入验证事件监听
