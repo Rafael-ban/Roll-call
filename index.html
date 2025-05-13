@@ -35,20 +35,20 @@
             </div>
             
             <div class="file-input">
-                <h2>请假名单</h2>
+                <h2>通用标记名单</h2>
                 <div class="tabs">
                     <div class="tab active" data-tab="file-tab">文件上传</div>
                     <div class="tab" data-tab="manual-tab">手动输入</div>
                 </div>
                 
                 <div class="tab-content active" id="file-tab">
-                    <label for="absenceList">请假名单文件（支持txt和xlsx格式）</label>
+                    <label for="absenceList">通用标记名单文件（支持txt和xlsx格式）</label>
                     <input type="file" id="absenceList" accept=".txt,.xlsx" />
                     <div id="absenceListError" class="error-message"></div>
                 </div>
                 
                 <div class="tab-content" id="manual-tab">
-                    <label for="manualAbsenceList">请输入请假学生姓名（支持换行或空格分隔）</label>
+                    <label for="manualAbsenceList">请输入需要标记的学生姓名（支持换行或空格分隔）</label>
                     <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
 张三 李四 王五
 或
@@ -61,7 +61,12 @@
         
         <div class="button-group">
             <button id="loadLists" class="btn-primary">加载名单</button>
-            <button id="markAbsent" class="btn-secondary">标记请假</button>
+            <div class="mark-grid">
+                <button id="markAbsent" class="btn-secondary">标记请假</button>
+                <button id="markLate" class="btn-secondary">标记迟到</button>
+                <button id="markLeave" class="btn-secondary">标记早退</button>
+                <button id="markMissing" class="btn-secondary">标记缺勤</button>
+            </div>
             <button id="saveAttendance" class="btn-success">保存出勤记录</button>
             <button id="exportFullExcel" class="btn-success">保存完整出勤记录表</button>
         </div>

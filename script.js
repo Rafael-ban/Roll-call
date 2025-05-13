@@ -201,7 +201,7 @@ function parseManualNames(input) {
     return [...new Set(names)].sort();
 }
 
-// 获取请假名单
+// 获取请假名单（函数名保持不变以维持兼容性）
 async function getAbsenceList() {
     const isFileTabActive = document.querySelector('.tab[data-tab="file-tab"]').classList.contains('active');
     
@@ -210,7 +210,7 @@ async function getAbsenceList() {
         
         if (absenceListFile) {
             if (!checkFileType(absenceListFile)) {
-                throw new Error('请假名单必须是TXT或XLSX格式的文件！');
+                throw new Error('标记名单必须是TXT或XLSX格式的文件！');
             }
             return await readStudentListFromFile(absenceListFile);
         }
@@ -381,6 +381,40 @@ function exportFullExcel() {
     XLSX.writeFile(wb, `${courseName}_${courseDate}_完整考勤表.xlsx`);
 }
 
+// 添加标记功能函数
+async function markStudentsStatus(status) {
+    try {
+        absences = await getAbsenceList();
+        
+        if (absences.length === 0) {
+            alert('请先上传标记名单文件或手动输入学生姓名！');
+            return;
+        }
+        
+        if (students.length === 0) {
+            alert('请先加载学生总名单！');
+            return;
+        }
+
+        const tableBody = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+        const rows = tableBody.rows;
+        
+        for (let i = 0; i < rows.length; i++) {
+            const name = rows[i].cells[0].textContent;
+            const select = rows[i].cells[1].getElementsByTagName('select')[0];
+            
+            if (absences.includes(name)) {
+                select.value = status;
+                // 更新样式
+                select.classList.remove('present');
+                select.classList.add('absent');
+            }
+        }
+    } catch (error) {
+        alert(`标记${status}学生出错: ${error.message}`);
+    }
+}
+
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 设置当前日期和时间
@@ -420,6 +454,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 添加导出Excel按钮事件监听
     document.getElementById('exportFullExcel').addEventListener('click', exportFullExcel);
+
+    // 添加新的标记按钮事件监听
+    document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
+    document.getElementById('markLeave').addEventListener('click', () => markStudentsStatus('早退'));
+    document.getElementById('markMissing').addEventListener('click', () => markStudentsStatus('缺勤'));
 });
 
 // 文件输入验证事件监听
@@ -472,26 +511,8 @@ document.getElementById('loadLists').addEventListener('click', async () => {
     }
 });
 
-// 标记请假按钮事件
-document.getElementById('markAbsent').addEventListener('click', async () => {
-    try {
-        absences = await getAbsenceList();
-        
-        if (absences.length === 0) {
-            alert('请先上传请假名单文件或手动输入请假学生姓名！');
-            return;
-        }
-        
-        if (students.length === 0) {
-            alert('请先加载学生总名单！');
-            return;
-        }
-        
-        displayAttendance();
-    } catch (error) {
-        alert('标记请假学生出错: ' + error.message);
-    }
-});
+// 修改原有的标记请假按钮事件
+document.getElementById('markAbsent').addEventListener('click', () => markStudentsStatus('请假'));
 
 // 保存出勤记录按钮事件
 document.getElementById('saveAttendance').addEventListener('click', () => {

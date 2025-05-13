@@ -122,8 +122,15 @@ body {
 /* Button styles */
 .button-group {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin: 20px 0;
+}
+
+.button-group > button {
+    margin: 0;
+    height: 45px;
+    font-size: 16px;
 }
 
 button {
@@ -323,6 +330,21 @@ select {
     transform: translateY(-2px);
 }
 
+/* 标记按钮网格布局 */
+.mark-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.mark-grid button {
+    margin: 0;
+    height: 40px;
+    font-size: 14px;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .button-group {
@@ -335,6 +357,10 @@ select {
     
     .date-time-container {
         flex-direction: column;
+    }
+
+    .mark-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
