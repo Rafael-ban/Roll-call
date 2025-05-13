@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎯 不那么智能的智能点名系统
+# 🎯 不那么智能的智能考勤系统
 
 <img src="https://socialify.git.ci/Rafael-ban/Roll-call/image?description=1&font=KoHo&forks=1&issues=1&language=1&name=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto" alt="Roll-call" width="640" height="320" />
 
@@ -17,7 +17,7 @@
 
 ## 🌟 项目简介
 
-不那么智能的智能点名系统是一款专为教育工作者设计的轻量级点名工具。它采用简洁直观的界面设计，支持多种数据格式导入，让课堂点名变得更加轻松高效。无论是日常课堂考勤还是大型活动签到，都能胜任自如。
+不那么智能的智能考勤系统是一款专为教育工作者设计的轻量级点名工具。它采用简洁直观的界面设计，支持多种数据格式导入，让课堂点名变得更加轻松高效。无论是日常课堂考勤还是大型活动签到，都能胜任自如。
 
 ## ✨ 核心特性
 
