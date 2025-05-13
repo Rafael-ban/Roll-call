@@ -381,3 +381,109 @@ select {
         page-break-inside: avoid;
     }
 }
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .container {
+        background: #2d2d2d;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .header {
+        background: linear-gradient(135deg, #2c5282, #553c9a);
+    }
+
+    .course-info input,
+    .date-time-container input,
+    .absence-textarea,
+    select {
+        background-color: #3d3d3d;
+        color: #e0e0e0;
+        border-color: #4d4d4d;
+    }
+
+    .file-upload {
+        background: #333333;
+    }
+
+    .file-input input[type="file"] {
+        background: #3d3d3d;
+        border-color: #4d4d4d;
+    }
+
+    .attendance-list th {
+        background-color: #3d3d3d;
+        color: #e0e0e0;
+    }
+
+    .attendance-list td {
+        border-bottom-color: #4d4d4d;
+    }
+
+    .attendance-list tr:hover {
+        background-color: #363636;
+    }
+
+    .tab {
+        background-color: #3d3d3d;
+        border-color: #4d4d4d;
+        color: #e0e0e0;
+    }
+
+    .tab.active {
+        background-color: #2d2d2d;
+        border-color: #4d4d4d;
+    }
+
+    .tab-content {
+        border-color: #4d4d4d;
+    }
+
+    /* 调整状态颜色适应深色主题 */
+    .present {
+        color: #4ade80;
+    }
+
+    .absent {
+        color: #f87171;
+    }
+
+    /* 修改教程链接颜色 */
+    #tutorialLink {
+        background-color: #3b82f6;
+    }
+
+    #tutorialLink:hover {
+        background-color: #2563eb;
+    }
+
+    /* 修改按钮颜色 */
+    .btn-primary {
+        background-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+
+    .btn-success {
+        background-color: #22c55e;
+    }
+
+    .btn-success:hover {
+        background-color: #16a34a;
+    }
+
+    .btn-secondary {
+        background-color: #64748b;
+    }
+
+    .btn-secondary:hover {
+        background-color: #475569;
+    }
+}
