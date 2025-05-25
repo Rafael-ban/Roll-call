@@ -377,6 +377,29 @@ select {
     font-size: 14px;
 }
 
+/* 样式化出勤记录表中的备注输入框 */
+.attendance-list tbody .remarks-input {
+    width: 100%; /* 使输入框填满其单元格的宽度 */
+    padding: 8px; /* 调整内边距以获得舒适的输入区域 */
+    border: 1px solid #ccc; /* 设置一个标准的边框 */
+    border-radius: 4px; /* 轻微的圆角，与现代UI风格匹配 */
+    box-sizing: border-box; /* 确保 padding 和 border 不会影响元素的总宽度 */
+    font-size: inherit; /* 继承表格的字体大小 */
+    font-family: inherit; /* 继承表格的字体家族 */
+}
+
+/* 可选：当备注输入框获得焦点时的样式 */
+.attendance-list tbody .remarks-input:focus {
+    border-color: #007bff; /* 更改边框颜色以指示焦点，可替换为您主题的主颜色 */
+    outline: none; /* 移除默认的浏览器轮廓 */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* 添加一个轻微的光晕效果，可替换为您主题的焦点样式 */
+}
+
+/* 确保表格单元格内容垂直居中（如果需要） */
+.attendance-list td {
+    vertical-align: middle; /* 这有助于使输入框和其他单元格内容对齐 */
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .button-group {

@@ -258,6 +258,15 @@ function displayAttendance() {
         cell2.appendChild(select);
         row.appendChild(cell1);
         row.appendChild(cell2);
+
+        // 新增：为“备注”列添加单元格和输入框
+        const remarksCell = row.insertCell();
+        const remarksInput = document.createElement('input');
+        remarksInput.type = 'text';
+        remarksInput.placeholder = '填写备注...';
+        remarksInput.className = 'remarks-input'; // 可选：添加类名以便样式化或选择
+        remarksCell.appendChild(remarksInput);
+
         fragment.appendChild(row);
     });
     
@@ -326,8 +335,9 @@ function exportFullExcel() {
     for (let i = 0; i < rows.length; i++) {
         const name = rows[i].cells[0].textContent;
         const status = rows[i].cells[1].getElementsByTagName('select')[0].value;
+        const remarks = rows[i].cells[2].getElementsByTagName('input')[0].value; // 获取备注
         if (status === '出勤') presentCount++;
-        studentData.push([i + 1, name, status, '']);
+        studentData.push([i + 1, name, status, remarks]);
     }
 
     // 添加统计信息
