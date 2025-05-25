@@ -16,14 +16,36 @@
     
     <div class="content">
         <div class="course-info">
-            <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
             <div class="date-time-container">
-                <input type="date" id="courseDate" placeholder="日期">
-                <input type="time" id="courseTime" placeholder="时间">
+                <div>
+                    <label for="courseDate">日期：</label>
+                    <input type="date" id="courseDate">
+                </div>
+                <div>
+                    <label for="courseTime">时间：</label>
+                    <input type="time" id="courseTime">
+                </div>
             </div>
-            <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
-            <input type="text" id="counselor" placeholder="辅导员姓名">
-            <input type="text" id="classInfo" placeholder="专业班级（如：计算机科学与技术1班）">
+            <div class="input-row"> <!-- 新增：第一行容器 -->
+                <div>
+                    <label for="courseName">课程名称：</label>
+                    <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
+                </div>
+                <div>
+                    <label for="classroom">课室：</label>
+                    <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
+                </div>
+            </div>
+            <div class="input-row"> <!-- 新增：第二行容器 -->
+                <div>
+                    <label for="counselor">辅导员姓名：</label>
+                    <input type="text" id="counselor" placeholder="辅导员姓名">
+                </div>
+                <div>
+                    <label for="classInfo">专业班级：</label>
+                    <input type="text" id="classInfo" placeholder="专业班级（如：计算机科学与技术1班）">
+                </div>
+            </div>
         </div>
         
         <div class="file-upload">

@@ -57,10 +57,16 @@ body {
 
 /* Course info styles */
 .course-info {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    max-width: 700px; /* 您可以根据需要调整此值 */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
     margin-bottom: 20px;
+    /* 以下样式是可选的，用于更好地可视化和组织 */
+    /* padding: 20px; */
+    /* border: 1px solid #ddd; */
+    /* border-radius: 8px; */
+    /* box-shadow: 0 2px 5px rgba(0,0,0,0.1); */
 }
 
 .course-info input,
@@ -83,6 +89,55 @@ body {
     border-radius: 4px;
     min-width: auto;
     flex: 1;
+}
+
+/* 为 input-row 类添加 CSS 规则，使其内部的子元素能够并排显示，并为这些子元素设置合适的宽度和间距 */
+.course-info .input-row {
+    display: flex; /* 启用 flex 布局，使子元素在同一行显示 */
+    flex-wrap: wrap; /* 如果空间不足，允许换行 */
+    gap: 10px; /* 子元素之间的间距 */
+    margin-bottom: 10px; /* 与下一行的间距 */
+}
+
+.course-info .input-row > div {
+    flex: 1; /* 让每个子元素（包含标签和输入框的div）平均分配空间 */
+    min-width: 200px; /* 为每个字段组设置一个最小宽度，以防过于拥挤 */
+    display: flex;
+    flex-direction: column; /* 使标签和输入框垂直排列 */
+}
+
+.course-info .input-row > div label {
+    margin-bottom: 5px; /* 标签和输入框之间的间距 */
+}
+
+.course-info .input-row > div input[type="text"],
+.course-info .input-row > div input[type="date"],
+.course-info .input-row > div input[type="time"] {
+    width: 100%; /* 使输入框充满其父div的宽度 */
+    box-sizing: border-box; /* 确保 padding 和 border 不会增加元素的总宽度 */
+}
+
+.date-time-container {
+    display: flex;
+    gap: 10px; /* 日期和时间输入框之间的间距 */
+    margin-bottom: 10px;
+}
+
+.date-time-container > div {
+    flex: 1;
+    min-width: 150px; /* 为日期/时间字段设置最小宽度 */
+    display: flex;
+    flex-direction: column;
+}
+
+.date-time-container > div label {
+    margin-bottom: 5px;
+}
+
+.date-time-container > div input[type="date"],
+.date-time-container > div input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* File upload section */
