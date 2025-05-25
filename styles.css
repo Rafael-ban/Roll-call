@@ -594,7 +594,7 @@ select {
 .modal.is-visible {
   opacity: 1;
   visibility: visible;
-  transition-delay: 0s; 
+  transition-delay: 0s; /* Remove delay when becoming visible */
 }
 
 .modal-content {
@@ -611,9 +611,10 @@ select {
     box-sizing: border-box;
 
     opacity: 0;
-    transform: scale(0.92) translateY(15px); 
-    transition: opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s, 
-                transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s; 
+    transform: scale(0.92) translateY(15px); /* Initial subtle scale and move */
+    /* Smooth transition for modal content itself, using standard ease-out */
+    transition: opacity 0.25s ease-out 0.05s, /* Changed cubic-bezier to ease-out */
+                transform 0.25s ease-out 0.05s; /* Changed cubic-bezier to ease-out */
 }
 
 .modal.is-visible .modal-content {
