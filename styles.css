@@ -32,17 +32,6 @@ body {
         --modal-close-button-hover-color: #fff;
         --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.6);
     }
-
-    /* 示例:
-    .modal-buttons .btn-primary {
-        background-color: var(--dark-primary-button-bg, #0056b3);
-        color: var(--dark-primary-button-text, #fff);
-    }
-    .modal-buttons .btn-success {
-        background-color: var(--dark-success-button-bg, #1e7e34);
-        color: var(--dark-success-button-text, #fff);
-    }
-    */
 }
 
 /* Container and header */
@@ -108,7 +97,8 @@ body {
 
 .date-time-container {
     display: flex;
-    gap: 5px;
+    gap: 10px; 
+    margin-bottom: 10px;
 }
 
 .date-time-container input {
@@ -146,13 +136,13 @@ body {
 
 .date-time-container {
     display: flex;
-    gap: 10px; /* 日期和时间输入框之间的间距 */
+    gap: 10px; 
     margin-bottom: 10px;
 }
 
 .date-time-container > div {
     flex: 1;
-    min-width: 150px; /* 为日期/时间字段设置最小宽度 */
+    min-width: 150px; 
     display: flex;
     flex-direction: column;
 }
@@ -364,10 +354,10 @@ select {
 /* Tutorial link as FAB */
 #tutorialLink {
     position: fixed;
-    bottom: 20px;  /* 改为底部固定 */
+    bottom: 20px;  
     right: 20px;
-    width: 56px;   /* FAB 标准尺寸 */
-    height: 56px;  /* FAB 标准尺寸 */
+    width: 56px;   
+    height: 56px;  
     padding: 0;
     background-color: #4CAF50;
     color: white;
@@ -415,7 +405,6 @@ select {
     font-family: inherit;
 }
 
-/* 可选：当备注输入框获得焦点时的样式 */
 .attendance-list tbody .remarks-input:focus {
     border-color: #007bff;
     outline: none;
@@ -582,7 +571,7 @@ select {
 
 /* 弹窗样式 */
 .modal {
-    display: none; 
+    display: flex; 
     position: fixed; 
     z-index: 1000; 
     left: 0;
@@ -596,6 +585,16 @@ select {
     
     padding: 15px; 
     box-sizing: border-box;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease-out, visibility 0s linear 0.25s; 
+}
+
+.modal.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s; 
 }
 
 .modal-content {
@@ -603,13 +602,57 @@ select {
     color: var(--modal-text-color);
     padding: 25px;
     border: 1px solid var(--modal-border-color);
-    border-radius: 8px; 
+    border-radius: 12px; /* Slightly more rounded for modern feel */
     width: 100%; 
-    max-width: 450px; 
+    max-width: 420px; /* Adjusted max-width */
     text-align: center;
     position: relative; 
     box-shadow: var(--modal-box-shadow);
     box-sizing: border-box;
+
+    opacity: 0;
+    transform: scale(0.92) translateY(15px); 
+    transition: opacity 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s, 
+                transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s; 
+}
+
+.modal.is-visible .modal-content {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Custom Alert Specific Styling */
+.custom-alert-style {
+    max-width: 380px; 
+    padding: 20px 25px 25px 25px; 
+    text-align: center; 
+}
+
+.custom-alert-style .alert-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.25em; 
+    font-weight: bold;
+    color: inherit; 
+}
+
+.custom-alert-style .alert-message {
+    margin-bottom: 20px;
+    font-size: 1em;
+    line-height: 1.5;
+    color: inherit;
+    word-wrap: break-word; 
+}
+
+.custom-alert-style .modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; 
+}
+
+.custom-alert-style .modal-buttons button {
+    min-width: 100px; 
+    flex-grow: 0; 
 }
 
 .modal-content h2 {
@@ -650,7 +693,6 @@ select {
     gap: 12px; 
 }
 
-/* 默认隐藏移动端特定按钮，显示桌面端按钮 */
 .mobile-only {
     display: none !important;
 }
@@ -658,12 +700,11 @@ select {
     display: inline-block !important;
 }
 
-/* 媒体查询：当屏幕宽度小于等于768px时 (典型的移动设备断点) */
 @media (max-width: 768px) {
     .desktop-only {
         display: none !important;
     }
     .mobile-only {
-        display: inline-block !important; /* 或 block, flex, etc. */
+        display: inline-block !important; 
     }
 }

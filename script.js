@@ -8,6 +8,27 @@ const MAX_NAME_LENGTH = 20;
 const MAX_STUDENTS = 200;
 const SYSTEM_START_DATE = '2025-04-23';
 
+// Custom Alert Modal Elements
+let customAlertModal = null;
+let customAlertTitleElement = null;
+let customAlertMessageElement = null;
+let customAlertOkButton = null;
+
+// Function to show custom alert
+function showCustomAlert(message, title = "提示") {
+    // DOM元素在DOMContentLoaded中初始化，这里直接使用
+    if (!customAlertModal || !customAlertTitleElement || !customAlertMessageElement || !customAlertOkButton) {
+        console.error("Custom alert modal elements not initialized or not found!");
+        // Fallback to native alert if modal elements are missing
+        alert((title !== "提示" ? title + ":\n" : "") + message);
+        return;
+    }
+
+    customAlertTitleElement.textContent = title;
+    customAlertMessageElement.textContent = message;
+    customAlertModal.classList.add('is-visible');
+}
+
 // 工具函数：安全的文本处理
 function sanitizeInput(input) {
     const div = document.createElement('div');
@@ -316,7 +337,7 @@ function exportFullExcel() {
     
     const tableRows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
     if (tableRows.length === 0) {
-        alert('没有考勤数据可导出！');
+        showCustomAlert('没有考勤数据可导出！');
         return;
     }
 
@@ -325,14 +346,14 @@ function exportFullExcel() {
     
     // 准备课程信息数据 (Info Block) - 新的横向两列布局
     const courseInfoRows = [
-        ['上课时间', `${courseDate} ${courseTime}`.trim(), null, null], // 第二对为空
+        ['上课时间', `${courseDate} ${courseTime}`.trim(), null, null],
         ['上课地点', classroom, '课程名称', courseName],
         ['辅导员', counselor, '班级', classInfo], 
     ];
     const courseInfoSection = [
-        ['课程考勤完整记录表', null, null, null], // Main Title - Row 0
+        ['课程考勤完整记录表', null, null, null],
         ...courseInfoRows,
-        [null, null, null, null], // Spacer Row after course info
+        [null, null, null, null], 
     ];
 
     // 主数据表表头
@@ -370,7 +391,7 @@ function exportFullExcel() {
     // --- 应用样式和功能 ---
     const boldCenteredStyle = {
         font: { bold: true },
-        alignment: { horizontal: "center", vertical: "center", wrapText: true } // 包含水平居中
+        alignment: { horizontal: "center", vertical: "center", wrapText: true }
     };
     const centeredStyle = {
         alignment: { horizontal: "center", vertical: "center", wrapText: true }
@@ -385,9 +406,8 @@ function exportFullExcel() {
     setCellStyle(ws, 'A1', boldCenteredStyle);
 
     // 2. 课程信息 - 按新的两列布局设置样式
-    // courseInfoSection[0] is title, courseInfoSection[1] to courseInfoSection[1 + courseInfoRows.length -1] are data
     for (let i = 0; i < courseInfoRows.length; i++) {
-        const sheetRowIndex = i + 1; // Data starts from sheet row 1 (0-indexed)
+        const sheetRowIndex = i + 1; 
         const dataRow = courseInfoRows[i];
         // First pair (Label in Col A, Value in Col B)
         if (dataRow[0] !== null) setCellStyle(ws, XLSX.utils.encode_cell({ r: sheetRowIndex, c: 0 }), boldStyle);
@@ -398,7 +418,7 @@ function exportFullExcel() {
     }
     
     // 3. 主数据表表头 - 添加筛选按钮并设置样式
-    const studentTableHeaderSheetRowIndex = courseInfoSection.length; // After title, info rows, and spacer
+    const studentTableHeaderSheetRowIndex = courseInfoSection.length; 
     ws['!autofilter'] = { ref: XLSX.utils.encode_range(
         { s: { r: studentTableHeaderSheetRowIndex, c: 0 }, e: { r: studentTableHeaderSheetRowIndex, c: studentDataTableHeader.length - 1 } }
     )};
@@ -408,12 +428,10 @@ function exportFullExcel() {
 
 
     // 4. "考勤统计" 标题 加粗居中
-    // statisticsData[0] is spacer, statisticsData[1] is title
-    const statsTitleSheetRowIndex = studentTableHeaderSheetRowIndex + 1 + studentDataRows.length + 1; // +1 for header, +1 for spacer
+    const statsTitleSheetRowIndex = studentTableHeaderSheetRowIndex + 1 + studentDataRows.length + 1; 
     setCellStyle(ws, XLSX.utils.encode_cell({ r: statsTitleSheetRowIndex, c: 0 }), boldCenteredStyle);
 
     // 5. 统计数据 (应到人数, 实到人数, 出勤率) - Labels bold, Values centered
-    // statisticsData[2], statisticsData[3], statisticsData[4] are the data rows
     for (let i = 0; i < 3; i++) {
         const currentSheetRowIndex = statsTitleSheetRowIndex + 1 + i;
         // Label in Col A
@@ -453,12 +471,12 @@ async function markStudentsStatus(status) {
         absences = await getAbsenceList();
         
         if (absences.length === 0) {
-            alert('请先上传标记名单文件或手动输入学生姓名！');
+            showCustomAlert('请先上传标记名单文件或手动输入学生姓名！');
             return;
         }
         
         if (students.length === 0) {
-            alert('请先加载学生总名单！');
+            showCustomAlert('请先加载学生总名单！');
             return;
         }
 
@@ -477,14 +495,14 @@ async function markStudentsStatus(status) {
             }
         }
     } catch (error) {
-        alert(`标记${status}学生出错: ${error.message}`);
+        showCustomAlert(`标记${status}学生出错: ${error.message}`, "错误");
     }
 }
 
 // 新增：一键反选功能
 function invertSelection() {
     if (students.length === 0) {
-        alert('请先加载学生名单！');
+        showCustomAlert('请先加载学生名单！');
         return;
     }
 
@@ -506,6 +524,27 @@ function invertSelection() {
 
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Custom Alert Modal Elements
+    customAlertModal = document.getElementById('customAlertModal');
+    customAlertTitleElement = document.getElementById('customAlertTitle');
+    customAlertMessageElement = document.getElementById('customAlertMessage');
+    customAlertOkButton = document.getElementById('customAlertOkButton');
+
+    if (customAlertOkButton) {
+        customAlertOkButton.addEventListener('click', () => {
+            if (customAlertModal) {
+                customAlertModal.classList.remove('is-visible');
+            }
+        });
+    }
+    if (customAlertModal) {
+        customAlertModal.addEventListener('click', (event) => {
+            if (event.target === customAlertModal) {
+                customAlertModal.classList.remove('is-visible');
+            }
+        });
+    }
+
     // 设置当前日期和时间
     const today = new Date();
     const year = today.getFullYear();
@@ -540,45 +579,53 @@ document.addEventListener('DOMContentLoaded', function() {
     // 为移动端保存按钮和弹窗内按钮添加事件监听
     const saveAttendanceMobileButton = document.getElementById('saveAttendanceMobile');
     const saveOptionsModal = document.getElementById('saveOptionsModal');
-    const closeButton = document.querySelector('.modal .close-button'); // 更精确的选择器
+    const closeButton = document.querySelector('.modal .close-button');
     const saveSimpleAttendanceButton = document.getElementById('saveSimpleAttendance');
     const saveFullAttendanceButton = document.getElementById('saveFullAttendance');
 
     if (saveAttendanceMobileButton) {
         saveAttendanceMobileButton.addEventListener('click', () => {
-            // JavaScript 控制模态框的显示。CSS负责其外观和居中。
-            if (saveOptionsModal) saveOptionsModal.style.display = 'flex'; // 使用 'flex' 以匹配CSS中的 display 类型
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.add('is-visible');
+            }
         });
     }
 
     if (closeButton) {
         closeButton.addEventListener('click', () => {
-            // JavaScript 控制模态框的隐藏。
-            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
         });
     }
 
     if (saveSimpleAttendanceButton) {
         saveSimpleAttendanceButton.addEventListener('click', () => {
             saveAttendanceToTxt();
-            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
         });
     }
 
     if (saveFullAttendanceButton) {
         saveFullAttendanceButton.addEventListener('click', () => {
             exportFullExcel();
-            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
         });
     }
 
     // 点击弹窗外部区域关闭弹窗
     window.addEventListener('click', (event) => {
-        // JavaScript 控制模态框的隐藏。
         if (event.target === saveOptionsModal) {
-            saveOptionsModal.style.display = 'none';
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
         }
     });
+
 
 
 
@@ -613,7 +660,7 @@ document.getElementById('loadLists').addEventListener('click', async () => {
     const studentListFile = document.getElementById('studentList').files[0];
     
     if (!studentListFile) {
-        alert('请上传总名单文件！');
+        showCustomAlert('请上传总名单文件！');
         return;
     }
     
@@ -623,7 +670,7 @@ document.getElementById('loadLists').addEventListener('click', async () => {
         absences = await getAbsenceList();
         displayAttendance();
     } catch (error) {
-        alert('加载名单出错: ' + error.message);
+        showCustomAlert('加载名单出错: ' + error.message, "错误");
     }
 });
 
@@ -652,7 +699,7 @@ function saveAttendanceToTxt() {
     const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
     
     if (rows.length === 0 || students.length === 0) {
-        alert('没有出勤记录可保存！');
+        showCustomAlert('没有出勤记录可保存！');
         return;
     }
     
@@ -719,7 +766,7 @@ function saveAttendanceToTxt() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    alert('出勤记录已保存！');
+    showCustomAlert('出勤记录已保存！', "成功");
 }
 
 
