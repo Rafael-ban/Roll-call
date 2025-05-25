@@ -457,8 +457,60 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加教程链接
     addTutorialLink();
 
-    // 添加导出Excel按钮事件监听
-    document.getElementById('exportFullExcel').addEventListener('click', exportFullExcel);
+    // 为桌面端按钮添加事件监听
+    const saveAttendanceTxtButton = document.getElementById('saveAttendanceTxt');
+    if (saveAttendanceTxtButton) {
+        saveAttendanceTxtButton.addEventListener('click', saveAttendanceToTxt);
+    }
+    const exportFullExcelDesktopButton = document.getElementById('exportFullExcelDesktop');
+    if (exportFullExcelDesktopButton) {
+        exportFullExcelDesktopButton.addEventListener('click', exportFullExcel);
+    }
+    
+    // 为移动端保存按钮和弹窗内按钮添加事件监听
+    const saveAttendanceMobileButton = document.getElementById('saveAttendanceMobile');
+    const saveOptionsModal = document.getElementById('saveOptionsModal');
+    const closeButton = document.querySelector('.modal .close-button'); // 更精确的选择器
+    const saveSimpleAttendanceButton = document.getElementById('saveSimpleAttendance');
+    const saveFullAttendanceButton = document.getElementById('saveFullAttendance');
+
+    if (saveAttendanceMobileButton) {
+        saveAttendanceMobileButton.addEventListener('click', () => {
+            // JavaScript 控制模态框的显示。CSS负责其外观和居中。
+            if (saveOptionsModal) saveOptionsModal.style.display = 'flex'; // 使用 'flex' 以匹配CSS中的 display 类型
+        });
+    }
+
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            // JavaScript 控制模态框的隐藏。
+            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+        });
+    }
+
+    if (saveSimpleAttendanceButton) {
+        saveSimpleAttendanceButton.addEventListener('click', () => {
+            saveAttendanceToTxt();
+            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+        });
+    }
+
+    if (saveFullAttendanceButton) {
+        saveFullAttendanceButton.addEventListener('click', () => {
+            exportFullExcel();
+            if (saveOptionsModal) saveOptionsModal.style.display = 'none';
+        });
+    }
+
+    // 点击弹窗外部区域关闭弹窗
+    window.addEventListener('click', (event) => {
+        // JavaScript 控制模态框的隐藏。
+        if (event.target === saveOptionsModal) {
+            saveOptionsModal.style.display = 'none';
+        }
+    });
+
+
 
     // 添加新的标记按钮事件监听
     document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
@@ -505,10 +557,14 @@ document.getElementById('loadLists').addEventListener('click', async () => {
 });
 
 // 修改原有的标记请假按钮事件
-document.getElementById('markAbsent').addEventListener('click', () => markStudentsStatus('请假'));
+const markAbsentButton = document.getElementById('markAbsent');
+if (markAbsentButton) {
+    markAbsentButton.addEventListener('click', () => markStudentsStatus('请假'));
+}
 
-// 保存出勤记录按钮事件
-document.getElementById('saveAttendance').addEventListener('click', () => {
+
+// 将原保存出勤记录按钮事件的逻辑封装为 saveAttendanceToTxt
+function saveAttendanceToTxt() {
     const courseName = document.getElementById('courseName').value || '未命名课程';
     const courseDate = document.getElementById('courseDate').value || '';
     const courseTimeValue = document.getElementById('courseTime').value || '';
@@ -593,7 +649,12 @@ document.getElementById('saveAttendance').addEventListener('click', () => {
     URL.revokeObjectURL(url);
     
     alert('出勤记录已保存！');
-});
+}
+
+// 确保旧的 saveAttendance 事件监听器（如果直接绑定到按钮）被移除或更新
+// 如果您之前是这样写的：
+// document.getElementById('saveAttendance').addEventListener('click', () => { ... });
+// 现在应该改为使用新的ID 'saveAttendanceTxt' (针对桌面) 或者通过移动端的弹窗触发。
 
 // 添加教程链接
 function addTutorialLink() {

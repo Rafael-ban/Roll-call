@@ -12,6 +12,41 @@ body {
     padding: 20px;
 }
 
+/* 定义颜色变量 - 浅色模式默认值 */
+:root {
+    --modal-background-color: #fefefe;
+    --modal-text-color: #333;
+    --modal-border-color: #ccc;
+    --modal-close-button-color: #888;
+    --modal-close-button-hover-color: #333;
+    --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    /* 您可能还有其他全局颜色变量，如按钮颜色等 */
+}
+
+/* 深色模式下的颜色变量 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --modal-background-color: #3a3a3a; /* 深色背景 */
+        --modal-text-color: #f1f1f1;       /* 浅色文本 */
+        --modal-border-color: #555;        /* 深色边框 */
+        --modal-close-button-color: #bbb;   /* 浅色关闭按钮 */
+        --modal-close-button-hover-color: #fff; /* 关闭按钮悬停时更亮 */
+        --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.6); /* 深色模式下阴影可以更深或不同 */
+    }
+
+    /* 如果按钮没有全局的深色模式适配，可以在这里为模态框内的按钮添加特定样式 */
+    /* 例如:
+    .modal-buttons .btn-primary {
+        background-color: var(--dark-primary-button-bg, #0056b3);
+        color: var(--dark-primary-button-text, #fff);
+    }
+    .modal-buttons .btn-success {
+        background-color: var(--dark-success-button-bg, #1e7e34);
+        color: var(--dark-success-button-text, #fff);
+    }
+    */
+}
+
 /* Container and header */
 .container {
     max-width: 800px;
@@ -551,5 +586,100 @@ select {
 
     .btn-secondary:hover {
         background-color: #475569;
+    }
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* 背景遮罩颜色通常不需要随主题变化，或可微调透明度 */
+    
+    align-items: center; /* 这些属性将在JS设置display:flex时生效 */
+    justify-content: center; /* 这些属性将在JS设置display:flex时生效 */
+    
+    padding: 15px; 
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
+    padding: 25px;
+    border: 1px solid var(--modal-border-color);
+    border-radius: 8px; 
+    width: 100%; 
+    max-width: 450px; 
+    text-align: center;
+    position: relative; 
+    box-shadow: var(--modal-box-shadow);
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em; 
+    color: inherit; /* 将继承 .modal-content 的 var(--modal-text-color) */
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    font-size: 1em; 
+    line-height: 1.6;
+    color: inherit; /* 将继承 .modal-content 的 var(--modal-text-color) */
+}
+
+.close-button {
+    color: var(--modal-close-button-color); 
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1; 
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--modal-close-button-hover-color); 
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column; /* 按钮垂直排列 */
+    gap: 12px; /* 按钮之间的间距 */
+}
+
+/* 
+  确保您的 .btn-primary 和 .btn-success 类也使用了CSS变量 
+  或者在 @media (prefers-color-scheme: dark) 中有相应的覆盖规则，
+  以保证按钮在深色模式下的UI一致性。
+  如果它们没有，您可能需要像上面注释掉的例子那样为它们添加深色模式样式。
+*/
+
+/* 默认隐藏移动端特定按钮，显示桌面端按钮 */
+.mobile-only {
+    display: none !important; /* 使用 !important 确保覆盖其他可能的 display 规则 */
+}
+.desktop-only {
+    display: inline-block !important; /* 或 block, flex, etc. 根据您的布局 */
+}
+
+/* 媒体查询：当屏幕宽度小于等于768px时 (典型的移动设备断点) */
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+    .mobile-only {
+        display: inline-block !important; /* 或 block, flex, etc. */
     }
 }

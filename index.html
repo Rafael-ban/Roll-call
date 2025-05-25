@@ -77,8 +77,11 @@
                 <button id="markMissing" class="btn-secondary">标记缺勤</button>
             </div>
             <button type="button" id="invertSelectionButton" class="btn-secondary">反选状态</button>
-            <button id="saveAttendance" class="btn-success">保存出勤记录</button>
-            <button id="exportFullExcel" class="btn-success">保存完整出勤记录表</button>
+            <!-- 桌面端按钮 -->
+            <button id="saveAttendanceTxt" class="btn-success desktop-only">保存出勤记录 (TXT)</button>
+            <button id="exportFullExcelDesktop" class="btn-success desktop-only">保存完整出勤记录表 (Excel)</button>
+            <!-- 移动端按钮 -->
+            <button id="saveAttendanceMobile" class="btn-success mobile-only">保存出勤记录</button>
         </div>
         
         <div class="attendance-section">
@@ -102,6 +105,19 @@
         不那么智能的智能点名系统 © 2025
         <div>Made with ❤️ by <a href="https://github.com/Rafael-ban" target="_blank">Rafael-ban</a></div>
         <div>系统已稳定运行 <span id="runningDays" class="running-days">0</span> 天</div>
+    </div>
+</div>
+
+<!-- 弹窗HTML结构 -->
+<div id="saveOptionsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>选择保存格式</h2>
+        <p>您希望如何保存出勤记录？</p>
+        <div class="modal-buttons">
+            <button id="saveSimpleAttendance" class="btn-primary">简易版出勤记录 (TXT)</button>
+            <button id="saveFullAttendance" class="btn-success">完整版出勤记录 (Excel)</button>
+        </div>
     </div>
 </div>
 
