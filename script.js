@@ -401,6 +401,29 @@ async function markStudentsStatus(status) {
     }
 }
 
+// 新增：一键反选功能
+function invertSelection() {
+    if (students.length === 0) {
+        alert('请先加载学生名单！');
+        return;
+    }
+
+    const attendanceTableBody = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+    const selects = attendanceTableBody.getElementsByTagName('select');
+
+    for (let select of selects) {
+        if (select.value === '出勤') {
+            select.value = '缺勤';
+            select.classList.remove('present');
+            select.classList.add('absent');
+        } else {
+            select.value = '出勤';
+            select.classList.remove('absent');
+            select.classList.add('present');
+        }
+    }
+}
+
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 设置当前日期和时间
@@ -431,6 +454,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
     document.getElementById('markLeave').addEventListener('click', () => markStudentsStatus('早退'));
     document.getElementById('markMissing').addEventListener('click', () => markStudentsStatus('缺勤'));
+
+    // 添加反选状态按钮事件监听
+    document.getElementById('invertSelectionButton').addEventListener('click', invertSelection);
 });
 
 // 文件输入验证事件监听
