@@ -296,6 +296,15 @@ function loadFormData() {
     }
 }
 
+// 辅助函数：设置单元格样式
+function setCellStyle(ws, cellAddress, style) {
+    if (!ws[cellAddress]) {
+        ws[cellAddress] = { t: 'z', s: style }; // 'z' for blank cell, apply style
+    } else {
+        ws[cellAddress].s = style;
+    }
+}
+
 // 导出完整Excel表格
 function exportFullExcel() {
     const courseName = document.getElementById('courseName').value || '未命名课程';
@@ -305,8 +314,8 @@ function exportFullExcel() {
     const counselor = document.getElementById('counselor').value || '未指定辅导员';
     const classInfo = document.getElementById('classInfo').value || '未指定班级';
     
-    const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
-    if (rows.length === 0) {
+    const tableRows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
+    if (tableRows.length === 0) {
         alert('没有考勤数据可导出！');
         return;
     }
@@ -314,60 +323,122 @@ function exportFullExcel() {
     // 创建工作簿
     const wb = XLSX.utils.book_new();
     
-    // 准备数据
-    const headerData = [
-        ['课程考勤完整记录表'],
-        ['课程名称', courseName],
-        ['上课时间', `${courseDate} ${courseTime}`],
-        ['上课地点', classroom],
-        ['班级', classInfo],
-        ['辅导员', counselor],
-        [''],
+    // 准备课程信息数据 (Info Block) - 新的横向两列布局
+    const courseInfoRows = [
+        ['上课时间', `${courseDate} ${courseTime}`.trim(), null, null], // 第二对为空
+        ['上课地点', classroom, '课程名称', courseName],
+        ['辅导员', counselor, '班级', classInfo], 
+    ];
+    const courseInfoSection = [
+        ['课程考勤完整记录表', null, null, null], // Main Title - Row 0
+        ...courseInfoRows,
+        [null, null, null, null], // Spacer Row after course info
     ];
 
-    // 添加表头
-    const tableHeader = ['序号', '姓名', '出勤状态', '备注'];
-    headerData.push(tableHeader);
+    // 主数据表表头
+    const studentDataTableHeader = ['序号', '姓名', '出勤状态', '备注'];
 
     // 添加学生数据
     let presentCount = 0;
-    const studentData = [];
-    for (let i = 0; i < rows.length; i++) {
-        const name = rows[i].cells[0].textContent;
-        const status = rows[i].cells[1].getElementsByTagName('select')[0].value;
-        const remarks = rows[i].cells[2].getElementsByTagName('input')[0].value; // 获取备注
+    const studentDataRows = [];
+    for (let i = 0; i < tableRows.length; i++) {
+        const name = tableRows[i].cells[0].textContent;
+        const statusSelect = tableRows[i].cells[1].getElementsByTagName('select')[0];
+        const status = statusSelect ? statusSelect.value : '未知';
+        const remarksInput = tableRows[i].cells[2].getElementsByTagName('input')[0];
+        const remarks = remarksInput ? remarksInput.value : '';
         if (status === '出勤') presentCount++;
-        studentData.push([i + 1, name, status, remarks]);
+        studentDataRows.push([i + 1, name, status, remarks]);
     }
 
-    // 添加统计信息
-    const totalCount = rows.length;
-    const summaryData = [
-        [''],
-        ['考勤统计'],
-        ['应到人数', totalCount],
-        ['实到人数', presentCount],
-        ['出勤率', `${((presentCount / totalCount) * 100).toFixed(2)}%`]
+    // 准备统计信息数据 (Summary Block)
+    const totalCount = studentDataRows.length; // Should be based on actual rows processed
+    const attendanceRate = totalCount > 0 ? `${((presentCount / totalCount) * 100).toFixed(2)}%` : 'N/A';
+    const statisticsData = [
+        [null, null, null, null], // Spacer - Row after student data
+        ['考勤统计', null, null, null], // Stats Title
+        ['应到人数', totalCount, '实到人数', presentCount],
+        ['出勤率', attendanceRate, null, null]
     ];
 
-    // 合并所有数据
-    const wsData = [...headerData, ...studentData, ...summaryData];
+    // 合并所有数据块准备写入工作表
+    const wsData = [...courseInfoSection, studentDataTableHeader, ...studentDataRows, ...statisticsData];
 
     // 创建工作表
     const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    // 设置单元格合并
-    ws['!merges'] = [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, // 标题合并
-        { s: { r: rows.length + 9, c: 0 }, e: { r: rows.length + 9, c: 3 } } // 统计标题合并
-    ];
+    // --- 应用样式和功能 ---
+    const boldCenteredStyle = {
+        font: { bold: true },
+        alignment: { horizontal: "center", vertical: "center", wrapText: true } // 包含水平居中
+    };
+    const centeredStyle = {
+        alignment: { horizontal: "center", vertical: "center", wrapText: true }
+    };
+     const boldStyle = {
+        font: { bold: true },
+        alignment: { vertical: "center", wrapText: true } 
+    };
 
-    // 设置列宽
+
+    // 1. "课程考勤完整记录表" 加粗居中 (A1)
+    // 此行代码将 boldCenteredStyle (包含水平居中) 应用于单元格 A1
+    setCellStyle(ws, 'A1', boldCenteredStyle);
+
+    // 2. 课程信息 - 按新的两列布局设置样式
+    // courseInfoSection[0] is title, courseInfoSection[1] to courseInfoSection[1 + courseInfoRows.length -1] are data
+    for (let i = 0; i < courseInfoRows.length; i++) {
+        const sheetRowIndex = i + 1; // Data starts from sheet row 1 (0-indexed)
+        const dataRow = courseInfoRows[i];
+        // First pair (Label in Col A, Value in Col B)
+        if (dataRow[0] !== null) setCellStyle(ws, XLSX.utils.encode_cell({ r: sheetRowIndex, c: 0 }), boldStyle);
+        if (dataRow[1] !== null) setCellStyle(ws, XLSX.utils.encode_cell({ r: sheetRowIndex, c: 1 }), centeredStyle);
+        // Second pair (Label in Col C, Value in Col D)
+        if (dataRow[2] !== null) setCellStyle(ws, XLSX.utils.encode_cell({ r: sheetRowIndex, c: 2 }), boldStyle);
+        if (dataRow[3] !== null) setCellStyle(ws, XLSX.utils.encode_cell({ r: sheetRowIndex, c: 3 }), centeredStyle);
+    }
+    
+    // 3. 主数据表表头 - 添加筛选按钮并设置样式
+    const studentTableHeaderSheetRowIndex = courseInfoSection.length; // After title, info rows, and spacer
+    ws['!autofilter'] = { ref: XLSX.utils.encode_range(
+        { s: { r: studentTableHeaderSheetRowIndex, c: 0 }, e: { r: studentTableHeaderSheetRowIndex, c: studentDataTableHeader.length - 1 } }
+    )};
+    for(let c = 0; c < studentDataTableHeader.length; c++) {
+        setCellStyle(ws, XLSX.utils.encode_cell({r: studentTableHeaderSheetRowIndex, c: c}), boldCenteredStyle);
+    }
+
+    // 4. "考勤统计" 标题 加粗居中
+    // statisticsData[0] is spacer, statisticsData[1] is title
+    const statsTitleSheetRowIndex = studentTableHeaderSheetRowIndex + 1 + studentDataRows.length + 1; // +1 for header, +1 for spacer
+    setCellStyle(ws, XLSX.utils.encode_cell({ r: statsTitleSheetRowIndex, c: 0 }), boldCenteredStyle);
+
+    // 5. 统计数据 (应到人数, 实到人数, 出勤率) - Labels bold, Values centered
+    // statisticsData[2], statisticsData[3], statisticsData[4] are the data rows
+    for (let i = 0; i < 3; i++) {
+        const currentSheetRowIndex = statsTitleSheetRowIndex + 1 + i;
+        // Label in Col A
+        setCellStyle(ws, XLSX.utils.encode_cell({ r: currentSheetRowIndex, c: 0 }), boldStyle); 
+        // Value in Col B
+        setCellStyle(ws, XLSX.utils.encode_cell({ r: currentSheetRowIndex, c: 1 }), centeredStyle); 
+    }
+
+    // --- 设置单元格合并 ---
+    // Merge for "课程考勤完整记录表" (A1:D1)
+    // 此行代码将单元格 A1 到 D1 合并，标题将在此合并区域内居中
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }]; 
+    
+    // Merge for "考勤统计" title (A_stats:D_stats)
+    ws['!merges'].push({ 
+        s: { r: statsTitleSheetRowIndex, c: 0 }, 
+        e: { r: statsTitleSheetRowIndex, c: 3 } 
+    });
+
+    // 设置列宽 - 调整以适应新的两列信息布局和学生数据
     ws['!cols'] = [
-        { wch: 8 },  // 序号列宽
-        { wch: 15 }, // 姓名列宽
-        { wch: 12 }, // 状态列宽
-        { wch: 20 }  // 备注列宽
+        { wch: 15 }, // Col A: Info Label 1 / 序号
+        { wch: 20 }, // Col B: Info Value 1 / 姓名
+        { wch: 15 }, // Col C: Info Label 2 / 出勤状态
+        { wch: 25 }  // Col D: Info Value 2 / 备注
     ];
 
     // 添加工作表到工作簿
@@ -509,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
             saveOptionsModal.style.display = 'none';
         }
     });
+
 
 
 
