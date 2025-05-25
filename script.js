@@ -382,7 +382,6 @@ function exportFullExcel() {
 
 
     // 1. "课程考勤完整记录表" 加粗居中 (A1)
-    // 此行代码将 boldCenteredStyle (包含水平居中) 应用于单元格 A1
     setCellStyle(ws, 'A1', boldCenteredStyle);
 
     // 2. 课程信息 - 按新的两列布局设置样式
@@ -407,6 +406,7 @@ function exportFullExcel() {
         setCellStyle(ws, XLSX.utils.encode_cell({r: studentTableHeaderSheetRowIndex, c: c}), boldCenteredStyle);
     }
 
+
     // 4. "考勤统计" 标题 加粗居中
     // statisticsData[0] is spacer, statisticsData[1] is title
     const statsTitleSheetRowIndex = studentTableHeaderSheetRowIndex + 1 + studentDataRows.length + 1; // +1 for header, +1 for spacer
@@ -424,7 +424,6 @@ function exportFullExcel() {
 
     // --- 设置单元格合并 ---
     // Merge for "课程考勤完整记录表" (A1:D1)
-    // 此行代码将单元格 A1 到 D1 合并，标题将在此合并区域内居中
     ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }]; 
     
     // Merge for "考勤统计" title (A_stats:D_stats)
@@ -723,10 +722,6 @@ function saveAttendanceToTxt() {
     alert('出勤记录已保存！');
 }
 
-// 确保旧的 saveAttendance 事件监听器（如果直接绑定到按钮）被移除或更新
-// 如果您之前是这样写的：
-// document.getElementById('saveAttendance').addEventListener('click', () => { ... });
-// 现在应该改为使用新的ID 'saveAttendanceTxt' (针对桌面) 或者通过移动端的弹窗触发。
 
 // 添加教程链接
 function addTutorialLink() {

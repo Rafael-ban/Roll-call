@@ -20,22 +20,20 @@ body {
     --modal-close-button-color: #888;
     --modal-close-button-hover-color: #333;
     --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    /* 您可能还有其他全局颜色变量，如按钮颜色等 */
 }
 
 /* 深色模式下的颜色变量 */
 @media (prefers-color-scheme: dark) {
     :root {
-        --modal-background-color: #3a3a3a; /* 深色背景 */
-        --modal-text-color: #f1f1f1;       /* 浅色文本 */
-        --modal-border-color: #555;        /* 深色边框 */
-        --modal-close-button-color: #bbb;   /* 浅色关闭按钮 */
-        --modal-close-button-hover-color: #fff; /* 关闭按钮悬停时更亮 */
-        --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.6); /* 深色模式下阴影可以更深或不同 */
+        --modal-background-color: #3a3a3a;
+        --modal-text-color: #f1f1f1;
+        --modal-border-color: #555;
+        --modal-close-button-color: #bbb;
+        --modal-close-button-hover-color: #fff;
+        --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.6);
     }
 
-    /* 如果按钮没有全局的深色模式适配，可以在这里为模态框内的按钮添加特定样式 */
-    /* 例如:
+    /* 示例:
     .modal-buttons .btn-primary {
         background-color: var(--dark-primary-button-bg, #0056b3);
         color: var(--dark-primary-button-text, #fff);
@@ -92,16 +90,11 @@ body {
 
 /* Course info styles */
 .course-info {
-    max-width: 700px; /* 您可以根据需要调整此值 */
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
     margin-bottom: 20px;
-    /* 以下样式是可选的，用于更好地可视化和组织 */
-    /* padding: 20px; */
-    /* border: 1px solid #ddd; */
-    /* border-radius: 8px; */
-    /* box-shadow: 0 2px 5px rgba(0,0,0,0.1); */
 }
 
 .course-info input,
@@ -126,30 +119,29 @@ body {
     flex: 1;
 }
 
-/* 为 input-row 类添加 CSS 规则，使其内部的子元素能够并排显示，并为这些子元素设置合适的宽度和间距 */
 .course-info .input-row {
-    display: flex; /* 启用 flex 布局，使子元素在同一行显示 */
-    flex-wrap: wrap; /* 如果空间不足，允许换行 */
-    gap: 10px; /* 子元素之间的间距 */
-    margin-bottom: 10px; /* 与下一行的间距 */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .course-info .input-row > div {
-    flex: 1; /* 让每个子元素（包含标签和输入框的div）平均分配空间 */
-    min-width: 200px; /* 为每个字段组设置一个最小宽度，以防过于拥挤 */
+    flex: 1;
+    min-width: 200px;
     display: flex;
-    flex-direction: column; /* 使标签和输入框垂直排列 */
+    flex-direction: column;
 }
 
 .course-info .input-row > div label {
-    margin-bottom: 5px; /* 标签和输入框之间的间距 */
+    margin-bottom: 5px;
 }
 
 .course-info .input-row > div input[type="text"],
 .course-info .input-row > div input[type="date"],
 .course-info .input-row > div input[type="time"] {
-    width: 100%; /* 使输入框充满其父div的宽度 */
-    box-sizing: border-box; /* 确保 padding 和 border 不会增加元素的总宽度 */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .date-time-container {
@@ -414,25 +406,24 @@ select {
 
 /* 样式化出勤记录表中的备注输入框 */
 .attendance-list tbody .remarks-input {
-    width: 100%; /* 使输入框填满其单元格的宽度 */
-    padding: 8px; /* 调整内边距以获得舒适的输入区域 */
-    border: 1px solid #ccc; /* 设置一个标准的边框 */
-    border-radius: 4px; /* 轻微的圆角，与现代UI风格匹配 */
-    box-sizing: border-box; /* 确保 padding 和 border 不会影响元素的总宽度 */
-    font-size: inherit; /* 继承表格的字体大小 */
-    font-family: inherit; /* 继承表格的字体家族 */
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: inherit;
+    font-family: inherit;
 }
 
 /* 可选：当备注输入框获得焦点时的样式 */
 .attendance-list tbody .remarks-input:focus {
-    border-color: #007bff; /* 更改边框颜色以指示焦点，可替换为您主题的主颜色 */
-    outline: none; /* 移除默认的浏览器轮廓 */
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* 添加一个轻微的光晕效果，可替换为您主题的焦点样式 */
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* 确保表格单元格内容垂直居中（如果需要） */
 .attendance-list td {
-    vertical-align: middle; /* 这有助于使输入框和其他单元格内容对齐 */
+    vertical-align: middle;
 }
 
 /* Responsive design */
@@ -598,10 +589,10 @@ select {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6); /* 背景遮罩颜色通常不需要随主题变化，或可微调透明度 */
+    background-color: rgba(0,0,0,0.6); 
     
-    align-items: center; /* 这些属性将在JS设置display:flex时生效 */
-    justify-content: center; /* 这些属性将在JS设置display:flex时生效 */
+    align-items: center; 
+    justify-content: center; 
     
     padding: 15px; 
     box-sizing: border-box;
@@ -625,14 +616,14 @@ select {
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.4em; 
-    color: inherit; /* 将继承 .modal-content 的 var(--modal-text-color) */
+    color: inherit; 
 }
 
 .modal-content p {
     margin-bottom: 20px;
     font-size: 1em; 
     line-height: 1.6;
-    color: inherit; /* 将继承 .modal-content 的 var(--modal-text-color) */
+    color: inherit; 
 }
 
 .close-button {
@@ -655,23 +646,16 @@ select {
 .modal-buttons {
     margin-top: 25px;
     display: flex;
-    flex-direction: column; /* 按钮垂直排列 */
-    gap: 12px; /* 按钮之间的间距 */
+    flex-direction: column; 
+    gap: 12px; 
 }
-
-/* 
-  确保您的 .btn-primary 和 .btn-success 类也使用了CSS变量 
-  或者在 @media (prefers-color-scheme: dark) 中有相应的覆盖规则，
-  以保证按钮在深色模式下的UI一致性。
-  如果它们没有，您可能需要像上面注释掉的例子那样为它们添加深色模式样式。
-*/
 
 /* 默认隐藏移动端特定按钮，显示桌面端按钮 */
 .mobile-only {
-    display: none !important; /* 使用 !important 确保覆盖其他可能的 display 规则 */
+    display: none !important;
 }
 .desktop-only {
-    display: inline-block !important; /* 或 block, flex, etc. 根据您的布局 */
+    display: inline-block !important;
 }
 
 /* 媒体查询：当屏幕宽度小于等于768px时 (典型的移动设备断点) */

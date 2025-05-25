@@ -26,7 +26,7 @@
                     <input type="time" id="courseTime">
                 </div>
             </div>
-            <div class="input-row"> <!-- 新增：第一行容器 -->
+            <div class="input-row">
                 <div>
                     <label for="courseName">课程名称：</label>
                     <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
@@ -36,7 +36,7 @@
                     <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
                 </div>
             </div>
-            <div class="input-row"> <!-- 新增：第二行容器 -->
+            <div class="input-row">
                 <div>
                     <label for="counselor">辅导员姓名：</label>
                     <input type="text" id="counselor" placeholder="辅导员姓名">
@@ -77,10 +77,8 @@
                 <button id="markMissing" class="btn-secondary">标记缺勤</button>
             </div>
             <button type="button" id="invertSelectionButton" class="btn-secondary">反选状态</button>
-            <!-- 桌面端按钮 -->
             <button id="saveAttendanceTxt" class="btn-success desktop-only">保存出勤记录 (TXT)</button>
             <button id="exportFullExcelDesktop" class="btn-success desktop-only">保存完整出勤记录表 (Excel)</button>
-            <!-- 移动端按钮 -->
             <button id="saveAttendanceMobile" class="btn-success mobile-only">保存出勤记录</button>
         </div>
         
@@ -95,7 +93,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 动态加载内容 -->
                 </tbody>
             </table>
         </div>
@@ -108,7 +105,6 @@
     </div>
 </div>
 
-<!-- 弹窗HTML结构 -->
 <div id="saveOptionsModal" class="modal">
     <div class="modal-content">
         <span class="close-button">&times;</span>
@@ -121,7 +117,6 @@
     </div>
 </div>
 
-<!-- 引入外部库和脚本 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <script src="script.js" defer></script>
 
