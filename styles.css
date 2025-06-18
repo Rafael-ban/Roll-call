@@ -1,4 +1,4 @@
-/* Reset and base styles - 移除重复的基础样式 */
+/* Reset and base styles */
 * {
     margin: 0;
     padding: 0;
@@ -12,36 +12,25 @@ body {
     padding: 20px;
 }
 
-/* CSS变量优化 - 合并颜色定义 */
+/* 定义颜色变量 - 浅色模式默认值 */
 :root {
-    --modal-bg: #fefefe;
-    --modal-text: #333;
-    --modal-border: #ccc;
-    --modal-close: #888;
-    --modal-close-hover: #333;
-    --modal-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    --primary-color: #4a90e2;
-    --primary-hover: #3a7bc8;
-    --success-color: #27ae60;
-    --success-hover: #219653;
-    --secondary-color: #718096;
-    --secondary-hover: #5a6779;
+    --modal-background-color: #fefefe;
+    --modal-text-color: #333;
+    --modal-border-color: #ccc;
+    --modal-close-button-color: #888;
+    --modal-close-button-hover-color: #333;
+    --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+/* 深色模式下的颜色变量 */
 @media (prefers-color-scheme: dark) {
     :root {
-        --modal-bg: #3a3a3a;
-        --modal-text: #f1f1f1;
-        --modal-border: #555;
-        --modal-close: #bbb;
-        --modal-close-hover: #fff;
-        --modal-shadow: 0 5px 15px rgba(0,0,0,0.6);
-        --primary-color: #3b82f6;
-        --primary-hover: #2563eb;
-        --success-color: #22c55e;
-        --success-hover: #16a34a;
-        --secondary-color: #64748b;
-        --secondary-hover: #475569;
+        --modal-background-color: #3a3a3a;
+        --modal-text-color: #f1f1f1;
+        --modal-border-color: #555;
+        --modal-close-button-color: #bbb;
+        --modal-close-button-hover-color: #fff;
+        --modal-box-shadow: 0 5px 15px rgba(0,0,0,0.6);
     }
 }
 
@@ -91,36 +80,81 @@ body {
 /* Course info styles */
 .course-info {
     max-width: 700px;
-    margin: 20px auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .course-info input,
+.course-info .date-time-container {
+    flex: 1;
+    min-width: 48%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.date-time-container {
+    display: flex;
+    gap: 10px; 
+    margin-bottom: 10px;
+}
+
 .date-time-container input {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    width: 100%;
+    min-width: auto;
+    flex: 1;
 }
 
-.date-time-container,
-.input-row {
+.course-info .input-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 10px;
-    flex-wrap: wrap;
 }
 
-.date-time-container > div,
-.input-row > div {
+.course-info .input-row > div {
     flex: 1;
-    min-width: 150px;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
 }
 
-.date-time-container > div label,
-.input-row > div label {
+.course-info .input-row > div label {
     margin-bottom: 5px;
+}
+
+.course-info .input-row > div input[type="text"],
+.course-info .input-row > div input[type="date"],
+.course-info .input-row > div input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.date-time-container {
+    display: flex;
+    gap: 10px; 
+    margin-bottom: 10px;
+}
+
+.date-time-container > div {
+    flex: 1;
+    min-width: 150px; 
+    display: flex;
+    flex-direction: column;
+}
+
+.date-time-container > div label {
+    margin-bottom: 5px;
+}
+
+.date-time-container > div input[type="date"],
+.date-time-container > div input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* File upload section */
@@ -182,30 +216,30 @@ button {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background-color: #4a90e2;
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
+    background-color: #3a7bc8;
 }
 
 .btn-success {
-    background-color: var(--success-color);
+    background-color: #27ae60;
     color: white;
 }
 
 .btn-success:hover {
-    background-color: var(--success-hover);
+    background-color: #219653;
 }
 
 .btn-secondary {
-    background-color: var(--secondary-color);
+    background-color: #718096;
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: var(--secondary-hover);
+    background-color: #5a6779;
 }
 
 /* Attendance section */
@@ -233,7 +267,6 @@ button {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #eee;
-    vertical-align: middle;
 }
 
 .attendance-list th {
@@ -378,6 +411,10 @@ select {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+.attendance-list td {
+    vertical-align: middle;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .button-group {
@@ -460,8 +497,7 @@ select {
     .course-info input,
     .date-time-container input,
     .absence-textarea,
-    select,
-    .file-input input[type="file"] {
+    select {
         background-color: #3d3d3d;
         color: #e0e0e0;
         border-color: #4d4d4d;
@@ -469,6 +505,11 @@ select {
 
     .file-upload {
         background: #333333;
+    }
+
+    .file-input input[type="file"] {
+        background: #3d3d3d;
+        border-color: #4d4d4d;
     }
 
     .attendance-list th {
@@ -484,6 +525,7 @@ select {
         background-color: #363636;
     }
 
+    /* 调整状态颜色适应深色主题 */
     .present {
         color: #4ade80;
     }
@@ -492,60 +534,92 @@ select {
         color: #f87171;
     }
 
+    /* 修改教程链接颜色 */
     #tutorialLink {
-        background-color: var(--primary-color);
+        background-color: #3b82f6;
     }
 
     #tutorialLink:hover {
-        background-color: var(--primary-hover);
+        background-color: #2563eb;
+    }
+
+    /* 修改按钮颜色 */
+    .btn-primary {
+        background-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+
+    .btn-success {
+        background-color: #22c55e;
+    }
+
+    .btn-success:hover {
+        background-color: #16a34a;
+    }
+
+    .btn-secondary {
+        background-color: #64748b;
+    }
+
+    .btn-secondary:hover {
+        background-color: #475569;
     }
 }
 
 /* 弹窗样式 */
 .modal {
-    display: flex;
-    position: fixed;
-    z-index: 1000;
+    display: flex; 
+    position: fixed; 
+    z-index: 1000; 
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
+    background-color: rgba(0,0,0,0.6); 
+    
+    align-items: center; 
+    justify-content: center; 
+    
+    padding: 15px; 
     box-sizing: border-box;
+
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
+    transition: opacity 0.25s ease-out, visibility 0s linear 0.25s; 
 }
 
 .modal.is-visible {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s; /* Remove delay when becoming visible */
 }
 
 .modal-content {
-    background-color: var(--modal-bg);
-    color: var(--modal-text);
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
     padding: 25px;
-    border: 1px solid var(--modal-border);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 420px;
+    border: 1px solid var(--modal-border-color);
+    border-radius: 12px; /* Slightly more rounded for modern feel */
+    width: 100%; 
+    max-width: 420px; /* Adjusted max-width */
     text-align: center;
-    position: relative;
-    box-shadow: var(--modal-shadow);
+    position: relative; 
+    box-shadow: var(--modal-box-shadow);
     box-sizing: border-box;
+
     opacity: 0;
-    transform: scale(0.92) translateY(15px);
-    transition: opacity 0.25s ease-out 0.05s, transform 0.25s ease-out 0.05s;
+    transform: scale(0.92) translateY(15px); /* Initial subtle scale and move */
+    /* Smooth transition for modal content itself, using standard ease-out */
+    transition: opacity 0.25s ease-out 0.05s, /* Changed cubic-bezier to ease-out */
+                transform 0.25s ease-out 0.05s; /* Changed cubic-bezier to ease-out */
 }
 
 .modal.is-visible .modal-content {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  opacity: 1;
+  transform: scale(1) translateY(0);
 }
 
 /* Custom Alert Specific Styling */
@@ -561,80 +635,6 @@ select {
     font-size: 1.25em; 
     font-weight: bold;
     color: inherit; 
-}
-
-.custom-alert-style .alert-message {
-    margin-bottom: 20px;
-    font-size: 1em;
-    line-height: 1.5;
-    color: inherit;
-    word-wrap: break-word; 
-}
-
-.custom-alert-style .modal-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center; 
-}
-
-.custom-alert-style .modal-buttons button {
-    min-width: 100px; 
-    flex-grow: 0; 
-}
-
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.4em; 
-    color: inherit; 
-}
-
-.modal-content p {
-    margin-bottom: 20px;
-    font-size: 1em; 
-    line-height: 1.6;
-    color: inherit; 
-}
-
-.close-button {
-    color: var(--modal-close-button-color); 
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    line-height: 1; 
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: var(--modal-close-button-hover-color); 
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-buttons {
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column; 
-    gap: 12px; 
-}
-
-.mobile-only {
-    display: none !important;
-}
-.desktop-only {
-    display: inline-block !important;
-}
-
-@media (max-width: 768px) {
-    .desktop-only {
-        display: none !important;
-    }
-    .mobile-only {
-        display: inline-block !important; 
-    }
-}
 }
 
 .custom-alert-style .alert-message {

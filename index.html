@@ -5,44 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
     <title>不那么智能的智能考勤系统</title>
-    
-    <!-- 预加载关键资源 -->
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="preload" href="script.js" as="script">
-    
-    <!-- DNS预解析 -->
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    
-    <!-- 关键CSS内联 -->
-    <style>
-        /* 关键渲染路径CSS */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #4a90e2, #6c5ce7);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-    </style>
-    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -166,27 +128,8 @@
     </div>
 </div>
 
-<!-- 优化脚本加载顺序 -->
-<script>
-    // 内联关键JS - 早期初始化
-    window.attendanceApp = {
-        students: [],
-        absences: [],
-        initialized: false
-    };
-</script>
-
-<!-- 异步加载外部库 -->
-<script>
-    (function() {
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
-        script.async = true;
-        document.head.appendChild(script);
-    })();
-</script>
-
-<script src="script.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script src="script.js" defer></script>
 
 </body>
 </html>

@@ -1,80 +1,32 @@
-// 性能优化的全局变量
-const app = window.attendanceApp || {
-    students: [],
-    absences: [],
-    initialized: false,
-    // 缓存DOM元素
-    dom: {},
-    // 防抖函数缓存
-    debounceTimers: {}
-};
+// 全局变量声明
+let students = [];
+let absences = [];
 
 // 常量定义
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_NAME_LENGTH = 20;
 const MAX_STUDENTS = 200;
 const SYSTEM_START_DATE = '2025-04-23';
 
-// 性能优化：缓存DOM元素
-function cacheDOM() {
-    const selectors = {
-        customAlertModal: '#customAlertModal',
-        customAlertTitle: '#customAlertTitle',
-        customAlertMessage: '#customAlertMessage',
-        customAlertOkButton: '#customAlertOkButton',
-        courseName: '#courseName',
-        courseDate: '#courseDate',
-        courseTime: '#courseTime',
-        classroom: '#classroom',
-        counselor: '#counselor',
-        classInfo: '#classInfo',
-        attendanceTable: '#attendanceTable',
-        runningDays: '#runningDays',
-        manualAbsenceList: '#manualAbsenceList'
-    };
-    
-    for (const [key, selector] of Object.entries(selectors)) {
-        app.dom[key] = document.querySelector(selector);
-    }
-}
+// Custom Alert Modal Elements
+let customAlertModal = null;
+let customAlertTitleElement = null;
+let customAlertMessageElement = null;
+let customAlertOkButton = null;
 
-// 防抖函数
-function debounce(func, wait, key) {
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(app.debounceTimers[key]);
-            func(...args);
-        };
-        clearTimeout(app.debounceTimers[key]);
-        app.debounceTimers[key] = setTimeout(later, wait);
-    };
-}
-
-// 节流函数
-function throttle(func, limit) {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
-
-// 优化的自定义弹窗
+// Function to show custom alert
 function showCustomAlert(message, title = "提示") {
-    if (!app.dom.customAlertModal) {
-        console.error("Custom alert modal not initialized!");
+    // DOM元素在DOMContentLoaded中初始化，这里直接使用
+    if (!customAlertModal || !customAlertTitleElement || !customAlertMessageElement || !customAlertOkButton) {
+        console.error("Custom alert modal elements not initialized or not found!");
+        // Fallback to native alert if modal elements are missing
         alert((title !== "提示" ? title + ":\n" : "") + message);
         return;
     }
 
-    app.dom.customAlertTitle.textContent = title;
-    app.dom.customAlertMessage.textContent = message;
-    app.dom.customAlertModal.classList.add('is-visible');
+    customAlertTitleElement.textContent = title;
+    customAlertMessageElement.textContent = message;
+    customAlertModal.classList.add('is-visible');
 }
 
 // 工具函数：安全的文本处理
@@ -276,28 +228,25 @@ async function getAbsenceList() {
     return parseManualNames(manualInput);
 }
 
-// 优化的显示考勤函数 - 使用虚拟滚动和DocumentFragment
+// 使用DocumentFragment优化DOM操作
 function displayAttendance() {
-    const attendanceTableBody = app.dom.attendanceTable.getElementsByTagName('tbody')[0];
+    const attendanceTableBody = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+    attendanceTableBody.innerHTML = '';
     
-    if (!app.students.length) {
-        attendanceTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center">没有学生名单数据</td></tr>';
+    if (students.length === 0) {
+        attendanceTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center">没有学生名单数据</td></tr>';
         return;
     }
     
-    // 使用DocumentFragment优化DOM操作
     const fragment = document.createDocumentFragment();
     
-    // 批量创建元素
-    const createRow = (student) => {
+    students.forEach(student => {
         const row = document.createElement('tr');
+        const cell1 = document.createElement('td');
+        const cell2 = document.createElement('td');
         
-        // 姓名单元格
-        const nameCell = document.createElement('td');
-        nameCell.textContent = student;
+        cell1.textContent = sanitizeInput(student);
         
-        // 状态单元格
-        const statusCell = document.createElement('td');
         const select = document.createElement('select');
         select.innerHTML = `
             <option value="出勤">出勤</option>
@@ -307,74 +256,64 @@ function displayAttendance() {
             <option value="早退">早退</option>
         `;
         
-        if (app.absences.includes(student)) {
+        if (absences.includes(student)) {
             select.value = '请假';
         }
         
-        // 优化事件监听 - 使用事件委托
-        select.className = select.value === '出勤' ? 'present' : 'absent';
-        statusCell.appendChild(select);
+        select.addEventListener('change', (e) => {
+            if (e.target.value === '出勤') {
+                e.target.classList.remove('absent');
+                e.target.classList.add('present');
+            } else {
+                e.target.classList.remove('present');
+                e.target.classList.add('absent');
+            }
+        });
         
-        // 备注单元格
-        const remarksCell = document.createElement('td');
+        if (select.value === '出勤') {
+            select.classList.add('present');
+        } else {
+            select.classList.add('absent');
+        }
+        
+        cell2.appendChild(select);
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+
+        // 新增：为“备注”列添加单元格和输入框
+        const remarksCell = row.insertCell();
         const remarksInput = document.createElement('input');
         remarksInput.type = 'text';
         remarksInput.placeholder = '填写备注...';
-        remarksInput.className = 'remarks-input';
+        remarksInput.className = 'remarks-input'; // 可选：添加类名以便样式化或选择
         remarksCell.appendChild(remarksInput);
-        
-        row.appendChild(nameCell);
-        row.appendChild(statusCell);
-        row.appendChild(remarksCell);
-        
-        return row;
-    };
-    
-    // 批量处理
-    app.students.forEach(student => {
-        fragment.appendChild(createRow(student));
+
+        fragment.appendChild(row);
     });
     
-    // 一次性更新DOM
-    attendanceTableBody.innerHTML = '';
     attendanceTableBody.appendChild(fragment);
-    
-    // 使用事件委托处理状态变更
-    attendanceTableBody.addEventListener('change', handleStatusChange);
 }
 
-// 事件委托处理状态变更
-function handleStatusChange(e) {
-    if (e.target.tagName === 'SELECT') {
-        const select = e.target;
-        select.className = select.value === '出勤' ? 'present' : 'absent';
-    }
-}
-
-// 优化的保存表单数据 - 使用防抖
-const saveFormData = debounce(() => {
+// 保存表单数据到localStorage
+function saveFormData() {
     const formData = {
-        courseName: app.dom.courseName.value,
-        classroom: app.dom.classroom.value,
-        counselor: app.dom.counselor.value,
-        classInfo: app.dom.classInfo.value
+        courseName: document.getElementById('courseName').value,
+        classroom: document.getElementById('classroom').value,
+        counselor: document.getElementById('counselor').value,
+        classInfo: document.getElementById('classInfo').value
     };
     localStorage.setItem('attendanceFormData', JSON.stringify(formData));
-}, 500, 'saveForm');
+}
 
-// 优化的加载表单数据
+// 从localStorage加载表单数据
 function loadFormData() {
-    try {
-        const savedData = localStorage.getItem('attendanceFormData');
-        if (savedData) {
-            const formData = JSON.parse(savedData);
-            app.dom.courseName.value = formData.courseName || '';
-            app.dom.classroom.value = formData.classroom || '';
-            app.dom.counselor.value = formData.counselor || '';
-            app.dom.classInfo.value = formData.classInfo || '';
-        }
-    } catch (error) {
-        console.warn('Failed to load form data:', error);
+    const savedData = localStorage.getItem('attendanceFormData');
+    if (savedData) {
+        const formData = JSON.parse(savedData);
+        document.getElementById('courseName').value = formData.courseName || '';
+        document.getElementById('classroom').value = formData.classroom || '';
+        document.getElementById('counselor').value = formData.counselor || '';
+        document.getElementById('classInfo').value = formData.classInfo || '';
     }
 }
 
@@ -529,14 +468,14 @@ function exportFullExcel() {
 // 添加标记功能函数
 async function markStudentsStatus(status) {
     try {
-        app.absences = await getAbsenceList();
+        absences = await getAbsenceList();
         
-        if (app.absences.length === 0) {
+        if (absences.length === 0) {
             showCustomAlert('请先上传标记名单文件或手动输入学生姓名！');
             return;
         }
         
-        if (app.students.length === 0) {
+        if (students.length === 0) {
             showCustomAlert('请先加载学生总名单！');
             return;
         }
@@ -548,7 +487,7 @@ async function markStudentsStatus(status) {
             const name = rows[i].cells[0].textContent;
             const select = rows[i].cells[1].getElementsByTagName('select')[0];
             
-            if (app.absences.includes(name)) {
+            if (absences.includes(name)) {
                 select.value = status;
                 // 更新样式
                 select.classList.remove('present');
@@ -562,7 +501,7 @@ async function markStudentsStatus(status) {
 
 // 新增：一键反选功能
 function invertSelection() {
-    if (app.students.length === 0) {
+    if (students.length === 0) {
         showCustomAlert('请先加载学生名单！');
         return;
     }
@@ -583,114 +522,118 @@ function invertSelection() {
     }
 }
 
-// 优化的初始化函数
-function initializeApp() {
-    if (app.initialized) return;
-    
-    // 缓存DOM元素
-    cacheDOM();
-    
+// 页面加载完成后的初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Custom Alert Modal Elements
+    customAlertModal = document.getElementById('customAlertModal');
+    customAlertTitleElement = document.getElementById('customAlertTitle');
+    customAlertMessageElement = document.getElementById('customAlertMessage');
+    customAlertOkButton = document.getElementById('customAlertOkButton');
+
+    if (customAlertOkButton) {
+        customAlertOkButton.addEventListener('click', () => {
+            if (customAlertModal) {
+                customAlertModal.classList.remove('is-visible');
+            }
+        });
+    }
+    if (customAlertModal) {
+        customAlertModal.addEventListener('click', (event) => {
+            if (event.target === customAlertModal) {
+                customAlertModal.classList.remove('is-visible');
+            }
+        });
+    }
+
     // 设置当前日期和时间
-    const now = new Date();
-    app.dom.courseDate.value = now.toISOString().split('T')[0];
-    app.dom.courseTime.value = now.toTimeString().slice(0, 5);
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const hours = String(today.getHours()).padStart(2, '0');
+    const minutes = String(today.getMinutes()).padStart(2, '0');
     
-    // 计算运行天数
+    document.getElementById('courseDate').value = `${year}-${month}-${day}`;
+    document.getElementById('courseTime').value = `${hours}:${minutes}`;
+    
+    // 计算系统运行时间
     calculateRunningDays();
+    setInterval(calculateRunningDays, 86400000);
     
-    // 加载表单数据
+    // 加载保存的表单数据
     loadFormData();
     
     // 添加教程链接
     addTutorialLink();
-    
-    // 绑定事件监听器
-    bindEventListeners();
-    
-    app.initialized = true;
-}
 
-// 优化的事件监听器绑定
-function bindEventListeners() {
-    // 自定义弹窗事件
-    if (app.dom.customAlertOkButton) {
-        app.dom.customAlertOkButton.addEventListener('click', () => {
-            app.dom.customAlertModal.classList.remove('is-visible');
-        });
+    // 为桌面端按钮添加事件监听
+    const saveAttendanceTxtButton = document.getElementById('saveAttendanceTxt');
+    if (saveAttendanceTxtButton) {
+        saveAttendanceTxtButton.addEventListener('click', saveAttendanceToTxt);
+    }
+    const exportFullExcelDesktopButton = document.getElementById('exportFullExcelDesktop');
+    if (exportFullExcelDesktopButton) {
+        exportFullExcelDesktopButton.addEventListener('click', exportFullExcel);
     }
     
-    // 点击弹窗外部关闭
-    if (app.dom.customAlertModal) {
-        app.dom.customAlertModal.addEventListener('click', (e) => {
-            if (e.target === app.dom.customAlertModal) {
-                app.dom.customAlertModal.classList.remove('is-visible');
+    // 为移动端保存按钮和弹窗内按钮添加事件监听
+    const saveAttendanceMobileButton = document.getElementById('saveAttendanceMobile');
+    const saveOptionsModal = document.getElementById('saveOptionsModal');
+    const closeButton = document.querySelector('.modal .close-button');
+    const saveSimpleAttendanceButton = document.getElementById('saveSimpleAttendance');
+    const saveFullAttendanceButton = document.getElementById('saveFullAttendance');
+
+    if (saveAttendanceMobileButton) {
+        saveAttendanceMobileButton.addEventListener('click', () => {
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.add('is-visible');
             }
         });
     }
-    
-    // 表单输入自动保存 - 使用防抖
-    ['courseName', 'classroom', 'counselor', 'classInfo'].forEach(id => {
-        const element = app.dom[id];
-        if (element) {
-            element.addEventListener('input', saveFormData);
-        }
-    });
-    
-    // 其他事件监听器...
-    const eventBindings = [
-        { id: 'loadLists', event: 'click', handler: loadListsHandler },
-        { id: 'markAbsent', event: 'click', handler: () => markStudentsStatus('请假') },
-        { id: 'markLate', event: 'click', handler: () => markStudentsStatus('迟到') },
-        { id: 'markLeave', event: 'click', handler: () => markStudentsStatus('早退') },
-        { id: 'markMissing', event: 'click', handler: () => markStudentsStatus('缺勤') },
-        { id: 'invertSelectionButton', event: 'click', handler: invertSelection },
-        { id: 'saveAttendanceTxt', event: 'click', handler: saveAttendanceToTxt },
-        { id: 'exportFullExcelDesktop', event: 'click', handler: exportFullExcel }
-    ];
-    
-    eventBindings.forEach(({ id, event, handler }) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener(event, handler);
-        }
-    });
-}
 
-// 优化的加载名单处理函数
-async function loadListsHandler() {
-    const studentListFile = document.getElementById('studentList').files[0];
-    
-    if (!studentListFile) {
-        showCustomAlert('请上传总名单文件！');
-        return;
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
+        });
     }
-    
-    try {
-        checkFileType(studentListFile);
-        
-        // 显示加载状态
-        const loadButton = document.getElementById('loadLists');
-        const originalText = loadButton.textContent;
-        loadButton.textContent = '加载中...';
-        loadButton.disabled = true;
-        
-        app.students = await readStudentListFromFile(studentListFile);
-        app.absences = await getAbsenceList();
-        
-        displayAttendance();
-        
-        // 恢复按钮状态
-        loadButton.textContent = originalText;
-        loadButton.disabled = false;
-        
-    } catch (error) {
-        showCustomAlert('加载名单出错: ' + error.message, "错误");
-        // 恢复按钮状态
-        const loadButton = document.getElementById('loadLists');
-        loadButton.textContent = '加载名单';
-        loadButton.disabled = false;
+
+    if (saveSimpleAttendanceButton) {
+        saveSimpleAttendanceButton.addEventListener('click', () => {
+            saveAttendanceToTxt();
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
+        });
     }
-}
+
+    if (saveFullAttendanceButton) {
+        saveFullAttendanceButton.addEventListener('click', () => {
+            exportFullExcel();
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
+        });
+    }
+
+    // 点击弹窗外部区域关闭弹窗
+    window.addEventListener('click', (event) => {
+        if (event.target === saveOptionsModal) {
+            if (saveOptionsModal) {
+                saveOptionsModal.classList.remove('is-visible');
+            }
+        }
+    });
+
+    // 添加新的标记按钮事件监听
+    document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
+    document.getElementById('markLeave').addEventListener('click', () => markStudentsStatus('早退'));
+    document.getElementById('markMissing').addEventListener('click', () => markStudentsStatus('缺勤'));
+
+    // 添加反选状态按钮事件监听
+    document.getElementById('invertSelectionButton').addEventListener('click', invertSelection);
+});
 
 // 文件输入验证事件监听
 document.getElementById('studentList').addEventListener('change', (event) => {
@@ -708,29 +651,31 @@ document.getElementById('studentList').addEventListener('change', (event) => {
     }
 });
 
-// 优化的页面加载
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-// 优化的文件检查 - 添加到异步队列
-document.addEventListener('DOMContentLoaded', () => {
-    const studentListInput = document.getElementById('studentList');
-    if (studentListInput) {
-        studentListInput.addEventListener('change', throttle((event) => {
-            const file = event.target.files[0];
-            const errorElement = document.getElementById('studentListError');
-            
-            try {
-                if (file) {
-                    checkFileType(file);
-                    errorElement.textContent = '';
-                }
-            } catch (error) {
-                errorElement.textContent = '错误：' + error.message;
-                event.target.value = '';
-            }
-        }, 300));
+// 加载名单按钮事件
+document.getElementById('loadLists').addEventListener('click', async () => {
+    const studentListFile = document.getElementById('studentList').files[0];
+    
+    if (!studentListFile) {
+        showCustomAlert('请上传总名单文件！');
+        return;
+    }
+    
+    try {
+        checkFileType(studentListFile);
+        students = await readStudentListFromFile(studentListFile);
+        absences = await getAbsenceList();
+        displayAttendance();
+    } catch (error) {
+        showCustomAlert('加载名单出错: ' + error.message, "错误");
     }
 });
+
+// 修改原有的标记请假按钮事件
+const markAbsentButton = document.getElementById('markAbsent');
+if (markAbsentButton) {
+    markAbsentButton.addEventListener('click', () => markStudentsStatus('请假'));
+}
+
 
 // 将原保存出勤记录按钮事件的逻辑封装为 saveAttendanceToTxt
 function saveAttendanceToTxt() {
@@ -749,7 +694,7 @@ function saveAttendanceToTxt() {
     
     const rows = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0].rows;
     
-    if (rows.length === 0 || app.students.length === 0) {
+    if (rows.length === 0 || students.length === 0) {
         showCustomAlert('没有出勤记录可保存！');
         return;
     }
@@ -784,7 +729,7 @@ function saveAttendanceToTxt() {
         }
     }
     
-    const totalCount = app.students.length;
+    const totalCount = students.length;
     
     // 创建输出内容
     let outputContent = [
