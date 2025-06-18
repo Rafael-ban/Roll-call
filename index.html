@@ -6,11 +6,16 @@
     <meta name="color-scheme" content="light dark">
     <title>不那么智能的智能考勤系统</title>
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" as="script">
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="script.js" as="script">
     
-    <!-- Critical CSS inlined -->
+    <!-- DNS预解析 -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- 关键CSS内联 -->
     <style>
+        /* 关键渲染路径CSS */
         * {
             margin: 0;
             padding: 0;
@@ -36,175 +41,152 @@
             padding: 20px;
             text-align: center;
         }
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
     </style>
     
-    <!-- Load non-critical CSS asynchronously -->
-    <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'; this.onload=null;">
-    <noscript><link rel="stylesheet" href="styles.css"></noscript>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Loading indicator -->
-    <div id="loadingIndicator" class="loading" style="display: block;">
-        <div>加载中...</div>
+<div class="container">
+    <div class="header">
+        <h1>不那么智能的智能考勤系统</h1>
+        <p>上传名单、记录出勤、保存查询</p>
     </div>
-
-    <div class="container" style="display: none;" id="mainContainer">
-        <div class="header">
-            <h1>不那么智能的智能考勤系统</h1>
-            <p>上传名单、记录出勤、保存查询</p>
-        </div>
-        
-        <div class="content">
-            <div class="course-info">
-                <div class="date-time-container">
-                    <div>
-                        <label for="courseDate">日期：</label>
-                        <input type="date" id="courseDate">
-                    </div>
-                    <div>
-                        <label for="courseTime">时间：</label>
-                        <input type="time" id="courseTime">
-                    </div>
+    
+    <div class="content">
+        <div class="course-info">
+            <div class="date-time-container">
+                <div>
+                    <label for="courseDate">日期：</label>
+                    <input type="date" id="courseDate">
                 </div>
-                <div class="input-row">
-                    <div>
-                        <label for="courseName">课程名称：</label>
-                        <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
-                    </div>
-                    <div>
-                        <label for="classroom">课室：</label>
-                        <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
-                    </div>
-                </div>
-                <div class="input-row">
-                    <div>
-                        <label for="counselor">辅导员姓名：</label>
-                        <input type="text" id="counselor" placeholder="辅导员姓名">
-                    </div>
-                    <div>
-                        <label for="classInfo">专业班级：</label>
-                        <input type="text" id="classInfo" placeholder="专业班级（如：计算机科学与技术1班）">
-                    </div>
+                <div>
+                    <label for="courseTime">时间：</label>
+                    <input type="time" id="courseTime">
                 </div>
             </div>
-            
-            <div class="file-upload">
-                <h2>上传名单文件</h2>
-                <div class="file-input">
-                    <label for="studentList">总名单（支持txt和xlsx格式）</label>
-                    <input type="file" id="studentList" accept=".txt,.xlsx" />
-                    <div id="studentListError" class="error-message"></div>
+            <div class="input-row">
+                <div>
+                    <label for="courseName">课程名称：</label>
+                    <input type="text" id="courseName" placeholder="课程名称（如：数据结构）">
                 </div>
-                
-                <div class="file-input">
-                    <h2>通用标记名单</h2>
-                    <label for="manualAbsenceList">请输入需要标记的学生姓名（支持换行或空格分隔）</label>
-                    <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
+                <div>
+                    <label for="classroom">课室：</label>
+                    <input type="text" id="classroom" placeholder="课室（如：1号楼201）">
+                </div>
+            </div>
+            <div class="input-row">
+                <div>
+                    <label for="counselor">辅导员姓名：</label>
+                    <input type="text" id="counselor" placeholder="辅导员姓名">
+                </div>
+                <div>
+                    <label for="classInfo">专业班级：</label>
+                    <input type="text" id="classInfo" placeholder="专业班级（如：计算机科学与技术1班）">
+                </div>
+            </div>
+        </div>
+        
+        <div class="file-upload">
+            <h2>上传名单文件</h2>
+            <div class="file-input">
+                <label for="studentList">总名单（支持txt和xlsx格式）</label>
+                <input type="file" id="studentList" accept=".txt,.xlsx" />
+                <div id="studentListError" class="error-message"></div>
+            </div>
+            
+            <div class="file-input">
+                <h2>通用标记名单</h2>
+                <label for="manualAbsenceList">请输入需要标记的学生姓名（支持换行或空格分隔）</label>
+                <textarea id="manualAbsenceList" class="absence-textarea" placeholder="例如：
 张三 李四 王五
 或
 张三
 李四
 王五"></textarea>
-                </div>
-            </div>
-            
-            <div class="button-group">
-                <button id="loadLists" class="btn-primary">加载名单</button>
-                <div class="mark-grid">
-                    <button id="markAbsent" class="btn-secondary">标记请假</button>
-                    <button id="markLate" class="btn-secondary">标记迟到</button>
-                    <button id="markLeave" class="btn-secondary">标记早退</button>
-                    <button id="markMissing" class="btn-secondary">标记缺勤</button>
-                </div>
-                <button type="button" id="invertSelectionButton" class="btn-secondary">反选状态</button>
-                <button id="saveAttendanceTxt" class="btn-success desktop-only">保存出勤记录 (TXT)</button>
-                <button id="exportFullExcelDesktop" class="btn-success desktop-only">保存完整出勤记录表 (Excel)</button>
-                <button id="saveAttendanceMobile" class="btn-success mobile-only">保存出勤记录</button>
-            </div>
-            
-            <div class="attendance-section">
-                <h2>出勤记录</h2>
-                <table class="attendance-list" id="attendanceTable">
-                    <thead>
-                        <tr>
-                            <th style="width: 40%">姓名</th>
-                            <th style="width: 30%">出勤状态</th>
-                            <th style="width: 30%">备注</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
             </div>
         </div>
         
-        <div class="footer">
-            不那么智能的智能点名系统 © 2025
-            <div>Made with ❤️ by <a href="https://github.com/Rafael-ban" target="_blank">Rafael-ban</a></div>
-            <div>系统已稳定运行 <span id="runningDays" class="running-days">0</span> 天</div>
-        </div>
-    </div>
-
-    <div id="saveOptionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>选择保存格式</h2>
-            <p>您希望如何保存出勤记录？</p>
-            <div class="modal-buttons">
-                <button id="saveSimpleAttendance" class="btn-primary">简易版出勤记录 (TXT)</button>
-                <button id="saveFullAttendance" class="btn-success">完整版出勤记录 (Excel)</button>
+        <div class="button-group">
+            <button id="loadLists" class="btn-primary">加载名单</button>
+            <div class="mark-grid">
+                <button id="markAbsent" class="btn-secondary">标记请假</button>
+                <button id="markLate" class="btn-secondary">标记迟到</button>
+                <button id="markLeave" class="btn-secondary">标记早退</button>
+                <button id="markMissing" class="btn-secondary">标记缺勤</button>
             </div>
+            <button type="button" id="invertSelectionButton" class="btn-secondary">反选状态</button>
+            <button id="saveAttendanceTxt" class="btn-success desktop-only">保存出勤记录 (TXT)</button>
+            <button id="exportFullExcelDesktop" class="btn-success desktop-only">保存完整出勤记录表 (Excel)</button>
+            <button id="saveAttendanceMobile" class="btn-success mobile-only">保存出勤记录</button>
+        </div>
+        
+        <div class="attendance-section">
+            <h2>出勤记录</h2>
+            <table class="attendance-list" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">姓名</th>
+                        <th style="width: 30%">出勤状态</th>
+                        <th style="width: 30%">备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
+    
+    <div class="footer">
+        不那么智能的智能点名系统 © 2025
+        <div>Made with ❤️ by <a href="https://github.com/Rafael-ban" target="_blank">Rafael-ban</a></div>
+        <div>系统已稳定运行 <span id="runningDays" class="running-days">0</span> 天</div>
+    </div>
+</div>
 
-    <!-- Custom Alert Modal HTML -->
-    <div id="customAlertModal" class="modal">
-        <div class="modal-content custom-alert-style">
-            <h2 id="customAlertTitle" class="alert-title">提示</h2>
-            <p id="customAlertMessage" class="alert-message">这里是提示信息。</p>
-            <div class="modal-buttons">
-                <button id="customAlertOkButton" class="btn-primary">确定</button>
-            </div>
+<div id="saveOptionsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>选择保存格式</h2>
+        <p>您希望如何保存出勤记录？</p>
+        <div class="modal-buttons">
+            <button id="saveSimpleAttendance" class="btn-primary">简易版出勤记录 (TXT)</button>
+            <button id="saveFullAttendance" class="btn-success">完整版出勤记录 (Excel)</button>
         </div>
     </div>
+</div>
 
-    <!-- Load scripts with optimized loading -->
-    <script>
-        // 预加载XLSX库
-        const xlsxScript = document.createElement('script');
-        xlsxScript.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
-        xlsxScript.async = true;
-        document.head.appendChild(xlsxScript);
-        
-        // 延迟加载主脚本直到DOM准备好
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadMainScript);
-        } else {
-            loadMainScript();
-        }
-        
-        function loadMainScript() {
-            const mainScript = document.createElement('script');
-            mainScript.src = 'script.js';
-            mainScript.onload = function() {
-                // 隐藏loading指示器，显示主内容
-                document.getElementById('loadingIndicator').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
-            };
-            document.head.appendChild(mainScript);
-        }
-    </script>
+<!-- Custom Alert Modal HTML -->
+<div id="customAlertModal" class="modal">
+    <div class="modal-content custom-alert-style">
+        <h2 id="customAlertTitle" class="alert-title">提示</h2>
+        <p id="customAlertMessage" class="alert-message">这里是提示信息。</p>
+        <div class="modal-buttons">
+            <button id="customAlertOkButton" class="btn-primary">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 优化脚本加载顺序 -->
+<script>
+    // 内联关键JS - 早期初始化
+    window.attendanceApp = {
+        students: [],
+        absences: [],
+        initialized: false
+    };
+</script>
+
+<!-- 异步加载外部库 -->
+<script>
+    (function() {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        script.async = true;
+        document.head.appendChild(script);
+    })();
+</script>
+
+<script src="script.js" async></script>
+
 </body>
 </html>

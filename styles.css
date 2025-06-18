@@ -1,50 +1,4 @@
-/* CSS变量定义 */
-:root {
-    --primary-color: #4a90e2;
-    --success-color: #27ae60;
-    --secondary-color: #718096;
-    --error-color: #e74c3c;
-    --present-color: #27ae60;
-    --absent-color: #e74c3c;
-    --border-color: #ddd;
-    --bg-color: #f0f2f5;
-    --container-bg: white;
-    --text-color: #333;
-    --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    
-    /* 模态框变量 */
-    --modal-bg: #fefefe;
-    --modal-text: #333;
-    --modal-border: #ccc;
-    --modal-close: #888;
-    --modal-close-hover: #333;
-    --modal-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
-/* 深色模式变量 */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-color: #1a1a1a;
-        --container-bg: #2d2d2d;
-        --text-color: #e0e0e0;
-        --border-color: #4d4d4d;
-        --primary-color: #3b82f6;
-        --success-color: #22c55e;
-        --secondary-color: #64748b;
-        --present-color: #4ade80;
-        --absent-color: #f87171;
-        --shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        
-        --modal-bg: #3a3a3a;
-        --modal-text: #f1f1f1;
-        --modal-border: #555;
-        --modal-close: #bbb;
-        --modal-close-hover: #fff;
-        --modal-shadow: 0 5px 15px rgba(0,0,0,0.6);
-    }
-}
-
-/* 基础样式 */
+/* Reset and base styles - 移除重复的基础样式 */
 * {
     margin: 0;
     padding: 0;
@@ -53,23 +7,56 @@
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: #f0f2f5;
+    color: #333;
     padding: 20px;
 }
 
-/* 容器和布局 */
+/* CSS变量优化 - 合并颜色定义 */
+:root {
+    --modal-bg: #fefefe;
+    --modal-text: #333;
+    --modal-border: #ccc;
+    --modal-close: #888;
+    --modal-close-hover: #333;
+    --modal-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    --primary-color: #4a90e2;
+    --primary-hover: #3a7bc8;
+    --success-color: #27ae60;
+    --success-hover: #219653;
+    --secondary-color: #718096;
+    --secondary-hover: #5a6779;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --modal-bg: #3a3a3a;
+        --modal-text: #f1f1f1;
+        --modal-border: #555;
+        --modal-close: #bbb;
+        --modal-close-hover: #fff;
+        --modal-shadow: 0 5px 15px rgba(0,0,0,0.6);
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --success-color: #22c55e;
+        --success-hover: #16a34a;
+        --secondary-color: #64748b;
+        --secondary-hover: #475569;
+    }
+}
+
+/* Container and header */
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: var(--container-bg);
+    background: white;
     border-radius: 12px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     overflow: hidden;
 }
 
 .header {
-    background: linear-gradient(135deg, var(--primary-color), #6c5ce7);
+    background: linear-gradient(135deg, #4a90e2, #6c5ce7);
     color: white;
     padding: 20px;
     text-align: center;
@@ -85,48 +72,60 @@ body {
     font-size: 14px;
 }
 
+@media (max-width: 768px) {
+  .button {
+    font-size: 14px;
+  }
+
+  .element {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
+/* Content section */
 .content {
     padding: 20px;
 }
 
-/* 表单样式 */
+/* Course info styles */
 .course-info {
     max-width: 700px;
     margin: 20px auto;
 }
 
-.input-row, .date-time-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
+.course-info input,
+.date-time-container input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
 }
 
-.input-row > div, .date-time-container > div {
+.date-time-container,
+.input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.date-time-container > div,
+.input-row > div {
     flex: 1;
     min-width: 150px;
     display: flex;
     flex-direction: column;
 }
 
-.input-row label, .date-time-container label {
+.date-time-container > div label,
+.input-row > div label {
     margin-bottom: 5px;
-    font-weight: bold;
-    color: var(--text-color);
 }
 
-input[type="text"], input[type="date"], input[type="time"], input[type="file"], select, .absence-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--container-bg);
-    color: var(--text-color);
-}
-
-/* 文件上传区域 */
+/* File upload section */
 .file-upload {
-    background: color-mix(in srgb, var(--container-bg) 95%, var(--border-color) 5%);
+    background: #f9f9f9;
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
@@ -135,10 +134,11 @@ input[type="text"], input[type="date"], input[type="time"], input[type="file"], 
 .file-upload h2 {
     font-size: 16px;
     margin-bottom: 10px;
-    color: var(--text-color);
+    color: #555;
 }
 
 .file-input {
+    position: relative;
     margin-bottom: 10px;
 }
 
@@ -146,19 +146,18 @@ input[type="text"], input[type="date"], input[type="time"], input[type="file"], 
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: var(--text-color);
+    color: #666;
 }
 
-input[type="file"] {
-    border-style: dashed;
+.file-input input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    background: white;
 }
 
-.absence-textarea {
-    height: 100px;
-    resize: vertical;
-}
-
-/* 按钮样式 */
+/* Button styles */
 .button-group {
     display: flex;
     flex-direction: column;
@@ -167,6 +166,7 @@ input[type="file"] {
 }
 
 .button-group > button {
+    margin: 0;
     height: 45px;
     font-size: 16px;
 }
@@ -177,7 +177,7 @@ button {
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
     flex: 1;
 }
 
@@ -187,7 +187,7 @@ button {
 }
 
 .btn-primary:hover {
-    filter: brightness(0.9);
+    background-color: var(--primary-hover);
 }
 
 .btn-success {
@@ -196,7 +196,7 @@ button {
 }
 
 .btn-success:hover {
-    filter: brightness(0.9);
+    background-color: var(--success-hover);
 }
 
 .btn-secondary {
@@ -205,22 +205,10 @@ button {
 }
 
 .btn-secondary:hover {
-    filter: brightness(0.9);
+    background-color: var(--secondary-hover);
 }
 
-.mark-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin: 10px 0;
-}
-
-.mark-grid button {
-    height: 40px;
-    font-size: 14px;
-}
-
-/* 考勤表格 */
+/* Attendance section */
 .attendance-section {
     margin-top: 20px;
 }
@@ -228,9 +216,9 @@ button {
 .attendance-section h2 {
     font-size: 18px;
     margin-bottom: 15px;
-    color: var(--text-color);
+    color: #444;
     padding-bottom: 5px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid #eee;
 }
 
 .attendance-list {
@@ -240,52 +228,43 @@ button {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.attendance-list th, .attendance-list td {
+.attendance-list th,
+.attendance-list td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
 }
 
 .attendance-list th {
-    background-color: color-mix(in srgb, var(--container-bg) 90%, var(--border-color) 10%);
-    color: var(--text-color);
+    background-color: #f5f7fa;
+    color: #555;
     font-weight: bold;
 }
 
 .attendance-list tr:hover {
-    background-color: color-mix(in srgb, var(--container-bg) 95%, var(--border-color) 5%);
+    background-color: #f8f9fa;
 }
 
-.attendance-list td {
-    vertical-align: middle;
-}
-
-.remarks-input {
+/* Select dropdown styles */
+select {
     width: 100%;
     padding: 8px;
-    border: 1px solid var(--border-color);
+    border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: inherit;
-    font-family: inherit;
-    background-color: var(--container-bg);
-    color: var(--text-color);
+    background-color: white;
 }
 
-.remarks-input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-color) 25%, transparent);
-}
-
-/* 状态样式 */
+/* Status colors */
 .present {
-    color: var(--present-color);
+    color: #27ae60;
 }
 
 .absent {
-    color: var(--absent-color);
+    color: #e74c3c;
 }
 
+/* Status badge */
 .status-badge {
     display: inline-block;
     padding: 4px 8px;
@@ -294,7 +273,235 @@ button {
     font-weight: bold;
 }
 
-/* 模态框样式 */
+/* Footer styles */
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    color: #888;
+    font-size: 12px;
+    border-top: 1px solid #eee;
+}
+
+.footer a {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer a:hover {
+    color: #3a7bc8;
+    text-decoration: underline;
+}
+
+/* Error message */
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Running days counter */
+.running-days {
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+/* Textarea styles */
+.absence-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    resize: vertical;
+}
+
+/* Tutorial link as FAB */
+#tutorialLink {
+    position: fixed;
+    bottom: 20px;  
+    right: 20px;
+    width: 56px;   
+    height: 56px;  
+    padding: 0;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 50%;  /* 圆形按钮 */
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+#tutorialLink:hover {
+    background-color: #45a049;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+}
+
+/* 标记按钮网格布局 */
+.mark-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.mark-grid button {
+    margin: 0;
+    height: 40px;
+    font-size: 14px;
+}
+
+/* 样式化出勤记录表中的备注输入框 */
+.attendance-list tbody .remarks-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.attendance-list tbody .remarks-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .course-info {
+        flex-direction: column;
+    }
+    
+    .date-time-container {
+        flex-direction: column;
+    }
+
+    .mark-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Loading indicator */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none;
+}
+
+.loading::after {
+    content: "加载中...";
+    font-size: 16px;
+    color: #4a90e2;
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: none;
+        padding: 0;
+    }
+
+    .container {
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .button-group,
+    .file-upload,
+    #tutorialLink {
+        display: none;
+    }
+
+    .attendance-list {
+        page-break-inside: avoid;
+    }
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .container {
+        background: #2d2d2d;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .header {
+        background: linear-gradient(135deg, #2c5282, #553c9a);
+    }
+
+    .course-info input,
+    .date-time-container input,
+    .absence-textarea,
+    select,
+    .file-input input[type="file"] {
+        background-color: #3d3d3d;
+        color: #e0e0e0;
+        border-color: #4d4d4d;
+    }
+
+    .file-upload {
+        background: #333333;
+    }
+
+    .attendance-list th {
+        background-color: #3d3d3d;
+        color: #e0e0e0;
+    }
+
+    .attendance-list td {
+        border-bottom-color: #4d4d4d;
+    }
+
+    .attendance-list tr:hover {
+        background-color: #363636;
+    }
+
+    .present {
+        color: #4ade80;
+    }
+
+    .absent {
+        color: #f87171;
+    }
+
+    #tutorialLink {
+        background-color: var(--primary-color);
+    }
+
+    #tutorialLink:hover {
+        background-color: var(--primary-hover);
+    }
+}
+
+/* 弹窗样式 */
 .modal {
     display: flex;
     position: fixed;
@@ -307,6 +514,7 @@ button {
     align-items: center;
     justify-content: center;
     padding: 15px;
+    box-sizing: border-box;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
@@ -329,6 +537,7 @@ button {
     text-align: center;
     position: relative;
     box-shadow: var(--modal-shadow);
+    box-sizing: border-box;
     opacity: 0;
     transform: scale(0.92) translateY(15px);
     transition: opacity 0.25s ease-out 0.05s, transform 0.25s ease-out 0.05s;
@@ -337,289 +546,6 @@ button {
 .modal.is-visible .modal-content {
     opacity: 1;
     transform: scale(1) translateY(0);
-}
-
-.custom-alert-style {
-    max-width: 380px;
-    padding: 20px 25px 25px 25px;
-}
-
-.alert-title {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.25em;
-    font-weight: bold;
-}
-
-.alert-message {
-    margin-bottom: 20px;
-    font-size: 1em;
-    line-height: 1.5;
-    word-wrap: break-word;
-}
-
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.4em;
-}
-
-.modal-content p {
-    margin-bottom: 20px;
-    font-size: 1em;
-    line-height: 1.6;
-}
-
-.close-button {
-    color: var(--modal-close);
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    line-height: 1;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.close-button:hover {
-    color: var(--modal-close-hover);
-}
-
-.modal-buttons {
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.custom-alert-style .modal-buttons {
-    margin-top: 20px;
-    justify-content: center;
-}
-
-.custom-alert-style .modal-buttons button {
-    min-width: 100px;
-    flex-grow: 0;
-}
-
-/* 页脚 */
-.footer {
-    text-align: center;
-    margin-top: 20px;
-    padding: 15px;
-    color: color-mix(in srgb, var(--text-color) 60%, transparent);
-    font-size: 12px;
-    border-top: 1px solid var(--border-color);
-}
-
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.footer a:hover {
-    filter: brightness(0.9);
-    text-decoration: underline;
-}
-
-.running-days {
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-/* 悬浮按钮 */
-#tutorialLink {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    background-color: var(--success-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 50%;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-}
-
-#tutorialLink:hover {
-    filter: brightness(0.9);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    transform: translateY(-2px);
-}
-
-/* 响应式和实用类 */
-.mobile-only {
-    display: none !important;
-}
-
-.desktop-only {
-    display: inline-block !important;
-}
-
-.error-message {
-    color: var(--error-color);
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-.loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .desktop-only {
-        display: none !important;
-    }
-    .mobile-only {
-        display: inline-block !important;
-    }
-    
-    .button-group {
-        flex-direction: column;
-    }
-    
-    .course-info, .date-time-container {
-        flex-direction: column;
-    }
-
-    .mark-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .button {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    
-    .container {
-        border-radius: 8px;
-    }
-}
-
-/* 打印样式 */
-@media print {
-    body {
-        background: none;
-        padding: 0;
-    }
-
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-
-    .button-group, .file-upload, #tutorialLink {
-        display: none;
-    }
-
-    .attendance-list {
-        page-break-inside: avoid;
-    }
-}
-        background-color: #2563eb;
-    }
-
-    /* 修改按钮颜色 */
-    .btn-primary {
-        background-color: #3b82f6;
-    }
-
-    .btn-primary:hover {
-        background-color: #2563eb;
-    }
-
-    .btn-success {
-        background-color: #22c55e;
-    }
-
-    .btn-success:hover {
-        background-color: #16a34a;
-    }
-
-    .btn-secondary {
-        background-color: #64748b;
-    }
-
-    .btn-secondary:hover {
-        background-color: #475569;
-    }
-}
-
-/* 弹窗样式 */
-.modal {
-    display: flex; 
-    position: fixed; 
-    z-index: 1000; 
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6); 
-    
-    align-items: center; 
-    justify-content: center; 
-    
-    padding: 15px; 
-    box-sizing: border-box;
-
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s ease-out, visibility 0s linear 0.25s; 
-}
-
-.modal.is-visible {
-  opacity: 1;
-  visibility: visible;
-  transition-delay: 0s; /* Remove delay when becoming visible */
-}
-
-.modal-content {
-    background-color: var(--modal-background-color);
-    color: var(--modal-text-color);
-    padding: 25px;
-    border: 1px solid var(--modal-border-color);
-    border-radius: 12px; /* Slightly more rounded for modern feel */
-    width: 100%; 
-    max-width: 420px; /* Adjusted max-width */
-    text-align: center;
-    position: relative; 
-    box-shadow: var(--modal-box-shadow);
-    box-sizing: border-box;
-
-    opacity: 0;
-    transform: scale(0.92) translateY(15px); /* Initial subtle scale and move */
-    /* Smooth transition for modal content itself, using standard ease-out */
-    transition: opacity 0.25s ease-out 0.05s, /* Changed cubic-bezier to ease-out */
-                transform 0.25s ease-out 0.05s; /* Changed cubic-bezier to ease-out */
-}
-
-.modal.is-visible .modal-content {
-  opacity: 1;
-  transform: scale(1) translateY(0);
 }
 
 /* Custom Alert Specific Styling */
@@ -635,6 +561,80 @@ button {
     font-size: 1.25em; 
     font-weight: bold;
     color: inherit; 
+}
+
+.custom-alert-style .alert-message {
+    margin-bottom: 20px;
+    font-size: 1em;
+    line-height: 1.5;
+    color: inherit;
+    word-wrap: break-word; 
+}
+
+.custom-alert-style .modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; 
+}
+
+.custom-alert-style .modal-buttons button {
+    min-width: 100px; 
+    flex-grow: 0; 
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em; 
+    color: inherit; 
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+    font-size: 1em; 
+    line-height: 1.6;
+    color: inherit; 
+}
+
+.close-button {
+    color: var(--modal-close-button-color); 
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1; 
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--modal-close-button-hover-color); 
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column; 
+    gap: 12px; 
+}
+
+.mobile-only {
+    display: none !important;
+}
+.desktop-only {
+    display: inline-block !important;
+}
+
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+    .mobile-only {
+        display: inline-block !important; 
+    }
+}
 }
 
 .custom-alert-style .alert-message {
