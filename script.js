@@ -626,10 +626,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-
-
-
-
     // 添加新的标记按钮事件监听
     document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
     document.getElementById('markLeave').addEventListener('click', () => markStudentsStatus('早退'));
