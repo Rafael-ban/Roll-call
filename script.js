@@ -1,3 +1,27 @@
+// 检查 XLSX 库是否已加载
+function waitForXLSX() {
+    return new Promise((resolve, reject) => {
+        if (typeof XLSX !== 'undefined') {
+            resolve();
+        } else {
+            let attempts = 0;
+            const maxAttempts = 50; // 最多等待5秒
+            // 等待 XLSX 库加载
+            const checkXLSX = () => {
+                if (typeof XLSX !== 'undefined') {
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    reject(new Error('XLSX库加载超时，请检查网络连接或刷新页面重试'));
+                } else {
+                    attempts++;
+                    setTimeout(checkXLSX, 100);
+                }
+            };
+            checkXLSX();
+        }
+    });
+}
+
 // 全局变量声明
 let students = [];
 let absences = [];
@@ -86,6 +110,9 @@ function checkFileType(file) {
 
 // 从文件读取学生名单
 async function readStudentListFromFile(file) {
+    // 确保 XLSX 库已加载
+    await waitForXLSX();
+    
     return new Promise((resolve, reject) => {
         const fileExtension = file.name.split('.').pop().toLowerCase();
         
@@ -233,6 +260,16 @@ function displayAttendance() {
     const attendanceTableBody = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
     attendanceTableBody.innerHTML = '';
     
+    // 在桌面端显示出勤记录面板
+    const attendancePanel = document.getElementById('attendancePanel');
+    const mainContent = document.querySelector('.main-content');
+    if (attendancePanel && window.innerWidth > 1024) {
+        attendancePanel.style.display = 'block';
+        if (mainContent) {
+            mainContent.classList.add('show-right-panel');
+        }
+    }
+    
     if (students.length === 0) {
         attendanceTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center">没有学生名单数据</td></tr>';
         return;
@@ -327,7 +364,10 @@ function setCellStyle(ws, cellAddress, style) {
 }
 
 // 导出完整Excel表格
-function exportFullExcel() {
+async function exportFullExcel() {
+    // 确保 XLSX 库已加载
+    await waitForXLSX();
+    
     const courseName = document.getElementById('courseName').value || '未命名课程';
     const courseDate = document.getElementById('courseDate').value;
     const courseTime = document.getElementById('courseTime').value;
@@ -524,6 +564,16 @@ function invertSelection() {
 
 // 页面加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始状态下在桌面端隐藏出勤记录面板
+    const attendancePanel = document.getElementById('attendancePanel');
+    const mainContent = document.querySelector('.main-content');
+    if (attendancePanel && window.innerWidth > 1024) {
+        attendancePanel.style.display = 'none';
+        if (mainContent) {
+            mainContent.classList.remove('show-right-panel');
+        }
+    }
+    
     // Initialize Custom Alert Modal Elements
     customAlertModal = document.getElementById('customAlertModal');
     customAlertTitleElement = document.getElementById('customAlertTitle');
@@ -571,9 +621,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (saveAttendanceTxtButton) {
         saveAttendanceTxtButton.addEventListener('click', saveAttendanceToTxt);
     }
-    const exportFullExcelDesktopButton = document.getElementById('exportFullExcelDesktop');
-    if (exportFullExcelDesktopButton) {
-        exportFullExcelDesktopButton.addEventListener('click', exportFullExcel);
+    const exportFullExcelDesktopButton = document.getElementById('exportFullExcelDesktop');    if (exportFullExcelDesktopButton) {
+        exportFullExcelDesktopButton.addEventListener('click', async () => {
+            try {
+                await exportFullExcel();
+            } catch (error) {
+                showCustomAlert('导出Excel失败: ' + error.message, "错误");
+            }
+        });
     }
     
     // 为移动端保存按钮和弹窗内按钮添加事件监听
@@ -606,13 +661,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 saveOptionsModal.classList.remove('is-visible');
             }
         });
-    }
-
-    if (saveFullAttendanceButton) {
-        saveFullAttendanceButton.addEventListener('click', () => {
-            exportFullExcel();
-            if (saveOptionsModal) {
-                saveOptionsModal.classList.remove('is-visible');
+    }    if (saveFullAttendanceButton) {
+        saveFullAttendanceButton.addEventListener('click', async () => {
+            try {
+                await exportFullExcel();
+                if (saveOptionsModal) {
+                    saveOptionsModal.classList.remove('is-visible');
+                }
+            } catch (error) {
+                showCustomAlert('导出Excel失败: ' + error.message, "错误");
             }
         });
     }
@@ -629,10 +686,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加新的标记按钮事件监听
     document.getElementById('markLate').addEventListener('click', () => markStudentsStatus('迟到'));
     document.getElementById('markLeave').addEventListener('click', () => markStudentsStatus('早退'));
-    document.getElementById('markMissing').addEventListener('click', () => markStudentsStatus('缺勤'));
-
-    // 添加反选状态按钮事件监听
+    document.getElementById('markMissing').addEventListener('click', () => markStudentsStatus('缺勤'));    // 添加反选状态按钮事件监听
     document.getElementById('invertSelectionButton').addEventListener('click', invertSelection);
+      // 处理窗口大小变化
+    window.addEventListener('resize', function() {
+        const attendancePanel = document.getElementById('attendancePanel');
+        const mainContent = document.querySelector('.main-content');
+        if (attendancePanel && mainContent) {
+            if (window.innerWidth <= 1024) {
+                // 移动端始终显示
+                attendancePanel.style.display = 'block';
+                mainContent.classList.remove('show-right-panel');
+            } else {
+                // 桌面端根据是否有数据决定显示
+                if (students.length === 0) {
+                    attendancePanel.style.display = 'none';
+                    mainContent.classList.remove('show-right-panel');
+                } else {
+                    attendancePanel.style.display = 'block';
+                    mainContent.classList.add('show-right-panel');
+                }
+            }
+        }
+    });
 });
 
 // 文件输入验证事件监听
